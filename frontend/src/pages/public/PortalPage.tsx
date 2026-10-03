@@ -1,263 +1,182 @@
 import { useState } from 'react';
-import { Shield, Vote, Users, TrendingUp, Eye, Scale, DollarSign, FileText, Activity, ChevronRight } from 'lucide-react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { StatusBadge, Card } from '@/components/common/Card';
-import { demoElection, candidates, proposals, expenses, validators, auditEvents, blockchainStatus } from '@/data/mockData';
+import { Shield, Search, CheckCircle2, Eye, DollarSign, Vote, Scale, Activity, ArrowRight } from 'lucide-react';
+import { Card, StatusBadge } from '@/components/common/Card';
+import { dashboardStats, demoElection, candidates, proposals } from '@/data/mockData';
+import { Link } from 'react-router-dom';
 
-type Tab = 'results' | 'governance' | 'expenses' | 'audit' | 'info';
+export default function PortalPage() {
+  const [ballotRef, setBallotRef] = useState('');
+  const [lookupResult, setLookupResult] = useState<{ found: boolean; block?: number; timestamp?: string; ref?: string } | null>(null);
 
-const categoryLabels: Record<string, string> = {
-  polling_workers: 'Polling Workers', observers: 'Observers', logistics: 'Logistics',
-  equipment: 'Equipment', training: 'Training', administration: 'Administration', transportation: 'Transportation',
-};
-
-const eventTypeLabels: Record<string, string> = {
-  rule_change_approved: 'Rule Change Approved', vote_cast: 'Vote Cast', expense_recorded: 'Expense Recorded',
-  proposal_created: 'Proposal Created', election_opened: 'Election Opened', voter_registered: 'Voter Registered',
-};
-
-export default function PublicPortal() {
-  const [activeTab, setActiveTab] = useState<Tab>('results');
-  const totalSpent = expenses.reduce((sum, e) => sum + e.amount, 0);
-
-  const categoryData = Object.entries(
-    expenses.reduce((acc, e) => { acc[e.category] = (acc[e.category] || 0) + e.amount; return acc; }, {} as Record<string, number>)
-  ).map(([key, value]) => ({ name: categoryLabels[key] || key, value, color: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#ef4444', '#ec4899'][Object.keys(categoryLabels).indexOf(key)] || '#64748b' }));
-
-  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'results', label: 'Results', icon: <TrendingUp className="w-4 h-4" /> },
-    { key: 'governance', label: 'Governance', icon: <Scale className="w-4 h-4" /> },
-    { key: 'expenses', label: 'Expenses', icon: <DollarSign className="w-4 h-4" /> },
-    { key: 'audit', label: 'Audit Trail', icon: <FileText className="w-4 h-4" /> },
-    { key: 'info', label: 'Election Info', icon: <Eye className="w-4 h-4" /> },
-  ];
+  const handleLookup = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ballotRef.trim()) return;
+    setLookupResult({
+      found: true,
+      ref: ballotRef.trim().toUpperCase(),
+      block: Math.floor(18000 + Math.random() * 500),
+      timestamp: new Date().toLocaleString(),
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 overflow-x-hidden">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col justify-between">
+      {/* Navbar */}
+      <header className="bg-slate-950/80 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center"><Shield className="w-5 h-5 text-white" /></div>
-            <div>
-              <h1 className="text-lg font-bold text-slate-900">ዝሁራ</h1>
-              <p className="text-[10px] text-slate-500 uppercase tracking-wider">Zihura — Public Transparency Portal</p>
+            <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center shadow-lg shadow-amber-600/30">
+              <Eye className="w-6 h-6 text-white" />
             </div>
-          </div>            <a href="/login" className="text-sm text-blue-600 hover:text-blue-700 font-medium cursor-pointer">Admin Login</a>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold text-white tracking-tight">Public Transparency Portal</h1>
+                <span className="text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold">
+                  Open Audit Access
+                </span>
+              </div>
+              <p className="text-xs text-slate-400">VeriVote — Public Governance Telemetry</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Link to="/login" className="text-xs text-slate-400 hover:text-white font-semibold">
+              Sign In
+            </Link>
+            <Link
+              to="/admin"
+              className="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-2 rounded-xl transition-all shadow-md"
+            >
+              Admin Dashboard
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {/* Hero */}
-        <div className="bg-gradient-to-r from-slate-900 to-blue-900 rounded-2xl p-5 sm:p-8 text-white mb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <StatusBadge status={demoElection.status} size="md" />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 flex-1">
+        {/* Banner */}
+        <div className="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 border border-amber-500/30 rounded-3xl p-6 sm:p-8 relative overflow-hidden">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-300 text-xs font-semibold px-3 py-1 rounded-full border border-amber-500/20 mb-3">
+              <Activity className="w-3.5 h-3.5" /> Public Verifiable Ledger Stream
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+              {demoElection.name}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+              All voters, journalists, and civic observers can track election progress, verify cryptographic ballot references, inspect validator quorum decisions, and review line-item financial expenditures in real time.
+            </p>
           </div>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">{demoElection.name}</h2>
-          <p className="text-blue-200 mt-1">Transparent. Verifiable. Trusted by All.</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            {[
-              { label: 'Registered Voters', value: '500', icon: Users },
-              { label: 'Votes Cast', value: '372', icon: Vote },
-              { label: 'Turnout', value: '74.4%', icon: TrendingUp },
-              { label: 'Validators', value: '5', icon: Shield },
-            ].map((stat) => (
-              <div key={stat.label} className="bg-white/10 rounded-xl p-3 sm:p-4 backdrop-blur-sm min-w-0">
-                <stat.icon className="w-5 h-5 text-blue-300 mb-2" />
-                <p className="text-xl sm:text-2xl font-bold">{stat.value}</p>
-                <p className="text-[10px] sm:text-xs text-blue-200 truncate">{stat.label}</p>
+        </div>
+
+        {/* Ballot Reference Verification Widget */}
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl">
+          <div className="max-w-2xl mx-auto space-y-4">
+            <div className="text-center">
+              <h3 className="text-lg font-bold text-white">Cryptographic Ballot Lookup Tool</h3>
+              <p className="text-xs text-slate-400 mt-1">Enter your ballot reference ID (e.g., VR-8F29A1B4) to verify block inclusion</p>
+            </div>
+
+            <form onSubmit={handleLookup} className="flex gap-2 max-w-lg mx-auto">
+              <input
+                type="text"
+                value={ballotRef}
+                onChange={(e) => setBallotRef(e.target.value)}
+                placeholder="Enter Reference (e.g. VR-8F29A1B4)"
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs font-mono font-bold text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+              <button
+                type="submit"
+                className="bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs px-5 py-3 rounded-xl transition-all shadow-md cursor-pointer flex items-center gap-1.5"
+              >
+                <Search className="w-4 h-4" /> Verify
+              </button>
+            </form>
+
+            {lookupResult && (
+              <div className="bg-slate-950 border border-emerald-500/40 rounded-2xl p-4 max-w-lg mx-auto space-y-2 text-xs animate-fadeIn">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold">
+                  <CheckCircle2 className="w-4 h-4" /> Ballot Verified on Block Ledger
+                </div>
+                <div className="space-y-1 text-slate-300 font-mono text-[11px]">
+                  <p><span className="text-slate-500">Reference:</span> {lookupResult.ref}</p>
+                  <p><span className="text-slate-500">Block Height:</span> #{lookupResult.block}</p>
+                  <p><span className="text-slate-500">Recorded At:</span> {lookupResult.timestamp}</p>
+                  <p><span className="text-slate-500">Privacy Status:</span> Anonymous Zero-Knowledge Ballot Record</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Grid Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p className="text-xs text-slate-400">Total Registered Voters</p>
+            <p className="text-2xl font-bold text-white mt-1">{demoElection.registeredVoters.toLocaleString()}</p>
+            <p className="text-[10px] text-slate-500 mt-1">Verified Digital Roll</p>
+          </div>
+
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p className="text-xs text-slate-400">Total Votes Cast</p>
+            <p className="text-2xl font-bold text-blue-400 mt-1">{demoElection.votesCast.toLocaleString()}</p>
+            <p className="text-[10px] text-slate-500 mt-1">Tamper-Evident Receipts</p>
+          </div>
+
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p className="text-xs text-slate-400">Voter Turnout</p>
+            <p className="text-2xl font-bold text-emerald-400 mt-1">{((demoElection.votesCast / demoElection.registeredVoters) * 100).toFixed(1)}%</p>
+            <p className="text-[10px] text-slate-500 mt-1">Active Participation</p>
+          </div>
+
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <p className="text-xs text-slate-400">CSO Quorum Nodes</p>
+            <p className="text-2xl font-bold text-purple-400 mt-1">5 / 5 Online</p>
+            <p className="text-[10px] text-slate-500 mt-1">Supermajority Consensus</p>
+          </div>
+        </div>
+
+        {/* Public Candidate Standings */}
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 className="text-base font-bold text-white">Candidate Results Tally</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {candidates.map((cand) => (
+              <div key={cand.id} className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                <div>
+                  <h4 className="font-bold text-sm text-white">{cand.name}</h4>
+                  <p className="text-xs text-slate-400">{cand.organization}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-base font-extrabold text-blue-400">{cand.votesReceived} Votes</span>
+                  <p className="text-[10px] text-slate-500">{cand.percentage}% Tally</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex items-center gap-1 bg-white rounded-xl border border-slate-200 p-1 mb-6 sm:mb-8 overflow-x-auto scrollbar-hide">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer ${
-                activeTab === tab.key ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'
-              }`}
-            >
-              {tab.icon}{tab.label}
-            </button>
-          ))}
+        {/* Governance Log */}
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+          <h3 className="text-base font-bold text-white">Validator Quorum Decisions Log</h3>
+          <div className="space-y-3">
+            {proposals.map((prop) => (
+              <div key={prop.id} className="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+                <div>
+                  <p className="font-bold text-white">{prop.proposalNumber} — {prop.title}</p>
+                  <p className="text-slate-400 mt-0.5">{prop.description}</p>
+                </div>
+                <div className="text-right flex-shrink-0 ml-4">
+                  <StatusBadge status={prop.status} />
+                  <p className="text-[10px] text-slate-500 mt-1">{prop.approvals}/5 Approvals</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-
-        {/* Results Tab */}
-        {activeTab === 'results' && (
-          <div className="space-y-6">
-            <Card title="Election Results" icon={<TrendingUp className="w-5 h-5" />}>
-              <div className="space-y-3">
-                {candidates.map((cand) => (
-                  <div key={cand.id}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-slate-900">{cand.name}</span>
-                      <span className="text-sm text-slate-600">{cand.votesReceived} votes ({cand.percentage}%)</span>
-                    </div>
-                    <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${cand.percentage}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 pt-4 border-t border-slate-100 grid grid-cols-3 gap-4 text-center">
-                <div><p className="text-lg font-bold text-slate-900">372</p><p className="text-xs text-slate-500">Total Votes</p></div>
-                <div><p className="text-lg font-bold text-slate-900">74.4%</p><p className="text-xs text-slate-500">Turnout</p></div>
-                <div><p className="text-lg font-bold text-slate-900">0</p><p className="text-xs text-slate-500">Invalid Ballots</p></div>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Governance Tab */}
-        {activeTab === 'governance' && (
-          <div className="space-y-4">
-            <Card title="Governance Proposals" subtitle={`${proposals.length} total proposals`} icon={<Scale className="w-5 h-5" />}>
-              <div className="space-y-4">
-                {proposals.map((p) => (
-                  <div key={p.id} className="p-4 bg-slate-50 rounded-xl">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono text-slate-400">{p.proposalNumber}</span>
-                          <StatusBadge status={p.status} />
-                        </div>
-                        <h4 className="text-sm font-semibold text-slate-900 mt-1">{p.title}</h4>
-                      </div>
-                      <span className="text-sm font-bold text-slate-900">{p.approvals}/{p.totalValidators}</span>
-                    </div>
-                    <p className="text-xs text-slate-600 mb-3">{p.description}</p>
-                    <div className="flex items-center gap-1">
-                      {p.validatorVotes.map((v) => (
-                        <span key={v.validatorId} className={`w-6 h-6 rounded-full text-[8px] font-bold flex items-center justify-center ${
-                          v.decision === 'approve' ? 'bg-emerald-100 text-emerald-700' :
-                          v.decision === 'reject' ? 'bg-red-100 text-red-700' : 'bg-slate-200 text-slate-500'
-                        }`} title={`${v.validatorName}: ${v.decision || 'pending'}`}>
-                          {v.validatorName.split(' ')[0][0]}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Expenses Tab */}
-        {activeTab === 'expenses' && (
-          <div className="space-y-6">
-            <Card title="Expenditure Summary" icon={<DollarSign className="w-5 h-5" />}>
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="w-48 h-48 flex-shrink-0">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie data={categoryData} dataKey="value" cx="50%" cy="50%" innerRadius={45} outerRadius={80} strokeWidth={0}>
-                        {categoryData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                      </Pie>
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-                <div className="flex-1">
-                  <p className="text-3xl font-bold text-slate-900">7.84M <span className="text-lg font-normal text-slate-500">ETB</span></p>
-                  <p className="text-sm text-slate-500 mb-4">Total Spent</p>
-                  <div className="space-y-2">
-                    {categoryData.map((cat) => (
-                      <div key={cat.name} className="flex items-center gap-2">
-                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
-                        <span className="text-sm text-slate-600 flex-1">{cat.name}</span>
-                        <span className="text-sm font-semibold text-slate-900">{(cat.value / 1000000).toFixed(1)}M ETB</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Audit Tab */}
-        {activeTab === 'audit' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <Card className="!p-4">
-                <p className="text-xs text-slate-500">Latest Block</p>
-                <p className="text-xl font-bold text-slate-900">#{blockchainStatus.latestBlock}</p>
-              </Card>
-              <Card className="!p-4">
-                <p className="text-xs text-slate-500">Total Records</p>
-                <p className="text-xl font-bold text-slate-900">{blockchainStatus.totalTransactions.toLocaleString()}</p>
-              </Card>
-            </div>
-            <Card title="Audit Trail" icon={<FileText className="w-5 h-5" />}>
-              <div className="space-y-3">
-                {auditEvents.map((event) => (
-                  <div key={event.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                    <span className="text-xs font-mono text-slate-400 w-16">#{event.blockNumber}</span>
-                    <span className="text-xs font-medium text-slate-700 flex-1">{eventTypeLabels[event.eventType] || event.eventType}</span>
-                    <span className="text-xs text-slate-500">{event.actor}</span>
-                    <StatusBadge status={event.status} />
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {/* Info Tab */}
-        {activeTab === 'info' && (
-          <div className="space-y-6">
-            <Card title="Election Information" icon={<Eye className="w-5 h-5" />}>
-              <div className="space-y-3">
-                {[
-                  { label: 'Election Name', value: demoElection.name },
-                  { label: 'Type', value: demoElection.type },
-                  { label: 'Status', value: demoElection.status },
-                  { label: 'Start Date', value: new Date(demoElection.startDate).toLocaleString() },
-                  { label: 'End Date', value: new Date(demoElection.endDate).toLocaleString() },
-                  { label: 'Seats', value: String(demoElection.seats) },
-                  { label: 'Voting Method', value: demoElection.votingMethod },
-                  { label: 'Eligibility', value: demoElection.eligibilityRules },
-                  { label: 'Total Voters', value: String(demoElection.registeredVoters) },
-                  { label: 'Votes Cast', value: String(demoElection.votesCast) },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                    <span className="text-sm text-slate-500">{item.label}</span>
-                    <span className="text-sm font-medium text-slate-900">{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </Card>
-            <Card title="Independent Validators" icon={<Shield className="w-5 h-5" />}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {validators.map((v) => (
-                  <div key={v.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                    <span className="w-8 h-8 rounded-full bg-violet-100 flex items-center justify-center text-xs font-bold text-violet-700">{v.shortName}</span>
-                    <div>
-                      <p className="text-xs font-medium text-slate-900">{v.name}</p>
-                      <StatusBadge status={v.status} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-          </div>
-        )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-slate-900 text-slate-400 py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <Shield className="w-4 h-4 text-blue-500" />
-            <span className="text-white font-semibold text-sm">ዝሁራ</span>
-          </div>
-          <p className="text-xs">ዝሁራ does not sell blockchain. ዝሁrå sells verifiable governance.</p>
-          <p className="text-xs text-slate-600 mt-1">© 2026 ዝሁrå — Zihura. All rights reserved.</p>
-        </div>
+      <footer className="py-6 text-center text-xs text-slate-500 border-t border-slate-800">
+        VeriVote Public Open Audit Platform
       </footer>
     </div>
   );

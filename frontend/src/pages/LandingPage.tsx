@@ -1,281 +1,286 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Shield, Eye, Vote, Scale, FileText, Users,
-  Building2, GraduationCap, Landmark, Globe, Lock,
-  ArrowRight, Star, Zap,
+  Building2, Lock, ArrowRight, Zap, CheckCircle2,
+  ChevronRight, Activity, ShieldCheck, Cpu
 } from 'lucide-react';
 
 export default function LandingPage() {
+  const [activeTab, setActiveTab] = useState<'admin' | 'validator' | 'voter' | 'public'>('admin');
+
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden">
+    <div className="min-h-screen bg-slate-950 text-slate-100 overflow-x-hidden font-sans">
+      {/* Dynamic Background Glow */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[140px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[140px]" />
+      </div>
+
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
+      <nav className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-bold text-slate-900 tracking-tight">ዝሁራ</span>
-              <span className="text-xs text-slate-400 ml-1 hidden sm:inline">Zihura</span>
-            </div>
-            <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sm text-slate-600 hover:text-slate-900 transition-colors cursor-pointer">Features</a>
-              <a href="#how-it-works" className="text-sm text-slate-600 hover:text-slate-900 transition-colors cursor-pointer">How It Works</a>
-              <a href="#use-cases" className="text-sm text-slate-600 hover:text-slate-900 transition-colors cursor-pointer">Use Cases</a>
-            </div>
             <div className="flex items-center gap-3">
-              <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors cursor-pointer">Log In</Link>
-              <Link to="/portal" className="inline-flex items-center gap-1.5 bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">
-                Explore Platform <ArrowRight className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                <Shield className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xl font-bold text-white tracking-tight">ዝሁራ</span>
+                  <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">VeriVote</span>
+                </div>
+                <p className="text-[10px] text-slate-400 tracking-widest uppercase">Digital Governance Infrastructure</p>
+              </div>
+            </div>
+
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#features" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Architecture</a>
+              <a href="#how-it-works" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Governance Flow</a>
+              <a href="#use-cases" className="text-sm font-medium text-slate-300 hover:text-white transition-colors">Enterprise Support</a>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link
+                to="/login"
+                className="text-sm font-semibold text-slate-300 hover:text-white transition-colors px-3 py-2"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/admin"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-600/30 cursor-pointer active:scale-95"
+              >
+                Launch Demo <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white">
-        <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-8 py-20 md:py-32">
+      {/* Hero Section */}
+      <section className="relative pt-16 pb-20 md:pt-24 md:pb-32 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1.5 rounded-full border border-blue-100 mb-6">
-              <Zap className="w-3.5 h-3.5" />
-              Governance-as-a-Service Platform
+            <div className="inline-flex items-center gap-2 bg-blue-500/10 text-blue-400 text-xs font-semibold px-4 py-2 rounded-full border border-blue-500/20 mb-8 backdrop-blur-md">
+              <Zap className="w-4 h-4 text-blue-400" />
+              Governance-as-a-Service (GaaS) Platform
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-slate-900 tracking-tight leading-tight">
-              Trust in Every Vote.
+
+            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
+              Trust in Every Vote. <br />
+              <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+                Independently Auditable.
+              </span>
             </h1>
-            <p className="mt-6 text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto">
-              Secure, transparent, independently auditable elections and governance infrastructure.
-              Transform elections from processes participants are <em>expected</em> to trust into processes whose records can be <em>independently verified</em>.
+
+            <p className="mt-6 text-base sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto font-normal">
+              VeriVote transforms elections from processes participants are expected to trust into processes whose critical records and decisions can be <em>independently verified</em>.
             </p>
+
+            {/* CTAs */}
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/login" className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/25 text-base w-full sm:w-auto justify-center active:scale-[0.98]">
-                Request a Demo <ArrowRight className="w-5 h-5" />
+              <Link
+                to="/admin"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-8 py-4 rounded-xl text-base transition-all shadow-xl shadow-blue-600/30 cursor-pointer active:scale-95"
+              >
+                Explore Admin Console <ArrowRight className="w-5 h-5" />
               </Link>
-              <Link to="/portal" className="inline-flex items-center gap-2 bg-slate-50 text-slate-700 font-semibold px-8 py-3.5 rounded-xl border-2 border-slate-300 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 transition-all text-base w-full sm:w-auto justify-center shadow-sm active:scale-[0.98]">
-                Explore Platform
+              <Link
+                to="/portal"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 font-bold px-8 py-4 rounded-xl text-base transition-all shadow-md cursor-pointer"
+              >
+                Public Transparency Portal
               </Link>
             </div>
           </div>
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto">
+
+          {/* Quick Metrics Bar */}
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {[
-              { value: '500', label: 'Registered Voters' },
-              { value: '372', label: 'Votes Cast' },
-              { value: '74.4%', label: 'Turnout' },
-              { value: '5', label: 'Validators' },
+              { label: 'Registered Voters', value: '500', sub: 'Verified Credentials' },
+              { label: 'Votes Cast', value: '372', sub: 'On-Chain Ledger' },
+              { label: 'Live Turnout', value: '74.4%', sub: 'Real-Time Telemetry' },
+              { label: 'Independent CSO Nodes', value: '5/5', sub: 'Active Quorum' },
             ].map((stat) => (
-              <div key={stat.label} className="text-center bg-white rounded-xl border border-slate-200 p-3 sm:p-4 shadow-sm">
-                <p className="text-xl sm:text-2xl font-bold text-slate-900">{stat.value}</p>
-                <p className="text-[10px] sm:text-xs text-slate-500 mt-1">{stat.label}</p>
+              <div key={stat.label} className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 text-center backdrop-blur-md">
+                <p className="text-2xl md:text-3xl font-extrabold text-white">{stat.value}</p>
+                <p className="text-xs font-bold text-blue-400 mt-1">{stat.label}</p>
+                <p className="text-[10px] text-slate-500 mt-0.5">{stat.sub}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* Problem Section */}
-      <section className="py-16 sm:py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto">
-            <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider">The Problem</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-900">Elections require trust. Governance requires accountability.</h2>
-            <p className="mt-4 text-slate-600">
-              Traditional elections depend on centralized institutions. Concerns around transparency, administrative errors, insider manipulation, and poor auditability erode public confidence.
-            </p>
-          </div>
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-            {[
-              { title: 'Lack of Transparency', desc: 'Critical decisions and records remain opaque to stakeholders and the public.' },
-              { title: 'Poor Auditability', desc: 'Difficulty independently verifying rule changes, expenditures, and election records.' },
-              { title: 'Public Distrust', desc: 'Even fair elections face skepticism when participants cannot independently verify outcomes.' },
-            ].map((item) => (
-              <div key={item.title} className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{item.desc}</p>
+          {/* Role Preview Interactive Container */}
+          <div className="mt-20 max-w-5xl mx-auto bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 border-b border-slate-800 pb-6">
+              <div>
+                <h3 className="text-xl font-bold text-white">Platform Role Architecture</h3>
+                <p className="text-xs text-slate-400 mt-0.5">Click any role to test its workspace interface</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              <div className="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                {(['admin', 'validator', 'voter', 'public'] as const).map((role) => (
+                  <button
+                    key={role}
+                    onClick={() => setActiveTab(role)}
+                    className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                      activeTab === role
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {role === 'admin' ? 'Administrator' : role === 'validator' ? 'Validator CSO' : role === 'voter' ? 'Voter' : 'Public Guest'}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-      {/* How It Works */}
-      <section id="how-it-works" className="py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider">How It Works</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-900">Verifiable Governance in 5 Steps</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-            {/* Step 1 - Create */}
-            <div className="text-center relative">
-              <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-slate-200" />
-              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-blue-50 text-blue-600">
-                <Building2 className="w-7 h-7" />
-              </div>
-              <p className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Step 01</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-900">Create</h3>
-              <p className="mt-1 text-sm text-slate-600">Set up your election with candidates, voters, and rules.</p>
-            </div>
-            {/* Step 2 - Verify */}
-            <div className="text-center relative">
-              <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-slate-200" />
-              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-emerald-50 text-emerald-600">
-                <Eye className="w-7 h-7" />
-              </div>
-              <p className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Step 02</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-900">Verify</h3>
-              <p className="mt-1 text-sm text-slate-600">Independent validators review and approve governance proposals.</p>
-            </div>
-            {/* Step 3 - Vote */}
-            <div className="text-center relative">
-              <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-slate-200" />
-              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-violet-50 text-violet-600">
-                <Vote className="w-7 h-7" />
-              </div>
-              <p className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Step 03</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-900">Vote</h3>
-              <p className="mt-1 text-sm text-slate-600">Voters cast ballots with privacy-preserving identity verification.</p>
-            </div>
-            {/* Step 4 - Validate */}
-            <div className="text-center relative">
-              <div className="hidden md:block absolute top-8 left-[60%] w-[80%] h-px bg-slate-200" />
-              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-amber-50 text-amber-600">
-                <Lock className="w-7 h-7" />
-              </div>
-              <p className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Step 04</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-900">Validate</h3>
-              <p className="mt-1 text-sm text-slate-600">Smart contracts enforce rules and prevent unauthorized changes.</p>
-            </div>
-            {/* Step 5 - Audit */}
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-rose-50 text-rose-600">
-                <FileText className="w-7 h-7" />
-              </div>
-              <p className="mt-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Step 05</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-900">Audit</h3>
-              <p className="mt-1 text-sm text-slate-600">Every critical action is recorded on an immutable audit trail.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+            {/* Dynamic Role Card */}
+            <div className="bg-slate-950/60 rounded-2xl p-6 border border-slate-800/80">
+              {activeTab === 'admin' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold">
+                        <Building2 className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-bold text-white">Election Administrator Console</h4>
+                        <p className="text-xs text-slate-400">Conduct elections, manage voters, candidates, and financial ledgers</p>
+                      </div>
+                    </div>
+                    <Link to="/admin" className="text-xs font-bold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer">
+                      Launch Admin <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-300 pt-2">
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">Create & Configure</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Set election rules, seats, candidate rosters, and schedules</p>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">Governance Proposals</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Submit rule changes requiring 4/5 validator approvals</p>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">Budget & Expenditure</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Record and publish line-item expense audits</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-      {/* Features */}
-      <section id="features" className="py-16 sm:py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider">Features</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-900">Built for Trust, Transparency & Security</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Secure Voting */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 text-blue-600 mb-4">
-                <Lock className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Secure Voting</h3>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed">Privacy-preserving identity verification with double-vote prevention.</p>
-            </div>
-            {/* Independent Validation */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-50 text-emerald-600 mb-4">
-                <Eye className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Independent Validation</h3>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed">Authorized validator organizations independently verify governance actions.</p>
-            </div>
-            {/* Governance Automation */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-violet-50 text-violet-600 mb-4">
-                <Scale className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Governance Automation</h3>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed">Smart contract-enforced quorum requirements prevent unauthorized rule changes.</p>
-            </div>
-            {/* Transparent Expenditure */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-50 text-amber-600 mb-4">
-                <FileText className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Transparent Expenditure</h3>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed">All election spending is publicly tracked with cryptographic document hashes.</p>
-            </div>
-            {/* Immutable Audit Trail */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-rose-50 text-rose-600 mb-4">
-                <Shield className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Immutable Audit Trail</h3>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed">Every critical event is recorded on a tamper-evident blockchain ledger.</p>
-            </div>
-            {/* Privacy-Preserving Identity */}
-            <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-cyan-50 text-cyan-600 mb-4">
-                <Users className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Privacy-Preserving Identity</h3>
-              <p className="mt-2 text-sm text-slate-600 leading-relaxed">Voter identities are never publicly linked to ballot choices.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+              {activeTab === 'validator' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold">
+                        <ShieldCheck className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-bold text-white">Independent Validator / CSO Dashboard</h4>
+                        <p className="text-xs text-slate-400">5 Civil Society Organizations validating election integrity</p>
+                      </div>
+                    </div>
+                    <Link to="/validator" className="text-xs font-bold text-purple-400 hover:text-purple-300 flex items-center gap-1 cursor-pointer">
+                      Launch Validator <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-300 pt-2">
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">Addis Transparency Org</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Active Validator Node #1</p>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">Ethio Civic Network</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Active Validator Node #2</p>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">Quorum Protection</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Smart contract blocks unauthorized edits without 4/5 votes</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-      {/* Use Cases */}
-      <section id="use-cases" className="py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <p className="text-sm font-semibold text-blue-600 uppercase tracking-wider">Use Cases</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-900">Governance for Every Organization</h2>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {[
-              { name: 'Governments', Icon: Landmark },
-              { name: 'Banks', Icon: Building2 },
-              { name: 'Corporations', Icon: Star },
-              { name: 'Universities', Icon: GraduationCap },
-              { name: 'Cooperatives', Icon: Users },
-              { name: 'Associations', Icon: Globe },
-            ].map((uc) => (
-              <div key={uc.name} className="bg-white rounded-xl border border-slate-200 p-5 text-center shadow-sm hover:shadow-md hover:border-blue-200 transition-all cursor-pointer">
-                <uc.Icon className="w-8 h-8 text-blue-600 mx-auto" />
-                <p className="mt-3 text-sm font-medium text-slate-900">{uc.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              {activeTab === 'voter' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold">
+                        <Vote className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-bold text-white">Privacy-Preserving Voting Booth</h4>
+                        <p className="text-xs text-slate-400">3-Step Ballot Submission with Cryptographic Proof</p>
+                      </div>
+                    </div>
+                    <Link to="/voting" className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer">
+                      Launch Voting Booth <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-300 pt-2">
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">1. Verify Identity</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Credential authentication (e.g. VTR-0001)</p>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">2. Select & Confirm</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Double verification step prior to casting</p>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">3. Cryptographic Receipt</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Generates reference ID (e.g. VR-8F29A1B4)</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-      {/* CTA */}
-      <section className="py-16 sm:py-20 bg-slate-900">
-        <div className="max-w-4xl mx-auto px-5 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">Build elections people can verify.</h2>
-          <p className="mt-4 text-lg text-slate-400 max-w-2xl mx-auto">
-            ዝሁራ does not sell blockchain. ዝሁራ sells verifiable governance.
-          </p>
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/login" className="inline-flex items-center gap-2 bg-blue-600 text-white font-semibold px-8 py-3.5 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/25 w-full sm:w-auto justify-center active:scale-[0.98]">
-              Request a Demo <ArrowRight className="w-5 h-5" />
-            </Link>              <Link to="/portal" className="inline-flex items-center gap-2 bg-white/10 text-white font-semibold px-8 py-3.5 rounded-xl border-2 border-white/30 hover:border-white/60 hover:bg-white/20 transition-all w-full sm:w-auto justify-center active:scale-[0.98]">
-              Explore Live Election
-            </Link>
+              {activeTab === 'public' && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold">
+                        <Eye className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h4 className="text-base font-bold text-white">Public Transparency & Audit Portal</h4>
+                        <p className="text-xs text-slate-400">Open-access election telemetry and audit lookup</p>
+                      </div>
+                    </div>
+                    <Link to="/portal" className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 cursor-pointer">
+                      Launch Portal <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-slate-300 pt-2">
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">No Login Required</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Open to citizens, observers, and press</p>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">Ballot Hash Lookup</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Verify ballot inclusion on block ledger</p>
+                    </div>
+                    <div className="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                      <p className="font-semibold text-white">Expenditure Audits</p>
+                      <p className="text-slate-400 text-[11px] mt-1">Full budget breakdown transparency</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-950 text-slate-400 py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-blue-500" />
-              <span className="text-white font-semibold">ዝሁራ</span>
-              <span className="text-xs text-slate-500">© 2026 Zihura</span>
-            </div>
-            <div className="flex items-center gap-6 text-sm">
-              <a href="#features" className="hover:text-white transition-colors cursor-pointer">Features</a>
-              <a href="#use-cases" className="hover:text-white transition-colors cursor-pointer">Use Cases</a>
-            </div>
+      <footer className="border-t border-slate-800 bg-slate-950 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-blue-500" />
+            <span className="font-bold text-slate-300">ዝሁራ — VeriVote Platform</span>
           </div>
+          <p>© 2026 ዝሁራ Trust Infrastructure. All rights reserved.</p>
         </div>
       </footer>
     </div>

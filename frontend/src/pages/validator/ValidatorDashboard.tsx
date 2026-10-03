@@ -1,71 +1,131 @@
 import { useState } from 'react';
-import { Shield, CheckCircle, XCircle, Eye, Scale, Clock } from 'lucide-react';
+import { Shield, CheckCircle2, XCircle, Scale, Building2, Check, RefreshCw, AlertCircle } from 'lucide-react';
 import { StatusBadge, Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
-import { proposals, validators, demoElection } from '@/data/mockData';
+import { proposals as initialProposals, validators, demoElection } from '@/data/mockData';
+import { useNavigate } from 'react-router-dom';
 
 export default function ValidatorDashboard() {
   const [activeTab, setActiveTab] = useState<'proposals' | 'network' | 'rules'>('proposals');
+  const [proposals, setProposals] = useState(initialProposals);
+  const [selectedValidator, setSelectedValidator] = useState('val-1'); // Addis Transparency Org
+  const navigate = useNavigate();
 
-  const pendingProposals = proposals.filter((p) => p.status === 'pending');
-  const recentProposals = proposals.slice(0, 5);
+  const handleVoteProposal = (proposalId: string, decision: 'approve' | 'reject') => {
+    setProposals((prev) =>
+      prev.map((p) => {
+        if (p.id !== proposalId) return p;
+        const currentVotes = p.validatorVotes || [];
+        const existingIdx = currentVotes.findIndex((v) => v.validatorId === selectedValidator);
+        let updatedVotes = [...currentVotes];
+        if (existingIdx >= 0) {
+          updatedVotes[existingIdx] = { ...updatedVotes[existingIdx], decision };
+        } else {
+          updatedVotes.push({
+            validatorId: selectedValidator,
+            validatorName: validators.find((v) => v.id === selectedValidator)?.name || 'Validator',
+            decision,
+          });
+        }
+        const approvals = updatedVotes.filter((v) => v.decision === 'approve').length;
+        const status = approvals >= p.requiredQuorum ? 'approved' : p.status;
+        return {
+          ...p,
+          validatorVotes: updatedVotes,
+          approvals,
+          status,
+        };
+      })
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200">
+      <header className="bg-slate-950/90 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-violet-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-600/30">
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-slate-900">Validator Dashboard</h1>
-                <p className="text-xs text-slate-500">Addis Transparency Organization</p>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-bold text-white tracking-tight">Validator Network Console</h1>
+                  <span className="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-full font-bold">
+                    CSO Node Active
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400">Independent Civil Society Election Oversight</p>
               </div>
             </div>
+
             <div className="flex items-center gap-3">
-              <StatusBadge status="online" size="md" />
-              <div className="w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-sm font-medium">A</div>
+              {/* Validator Node Selector */}
+              <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 p-1.5 rounded-xl text-xs">
+                <span className="text-slate-400 font-medium pl-1">Active Node:</span>
+                <select
+                  value={selectedValidator}
+                  onChange={(e) => setSelectedValidator(e.target.value)}
+                  className="bg-slate-800 text-white font-semibold rounded-lg px-2 py-1 outline-none border border-slate-700 cursor-pointer"
+                >
+                  {validators.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.name} ({v.shortName})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                onClick={() => navigate('/admin')}
+                className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl border border-slate-700 cursor-pointer transition-colors"
+              >
+                Admin Panel
+              </button>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-          <Card className="!p-4">
-            <p className="text-xs text-slate-500">Active Election</p>
-            <p className="text-sm font-bold text-slate-900 mt-1">{demoElection.name}</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* Network Metrics Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4">
+            <p className="text-xs text-slate-400">Target Election</p>
+            <p className="text-sm font-bold text-white mt-1 truncate">{demoElection.name}</p>
             <StatusBadge status={demoElection.status} />
-          </Card>
-          <Card className="!p-4">
-            <p className="text-xs text-slate-500">Pending Proposals</p>
-            <p className="text-2xl font-bold text-amber-600 mt-1">{pendingProposals.length}</p>
-          </Card>
-          <Card className="!p-4">
-            <p className="text-xs text-slate-500">Approved This Session</p>
-            <p className="text-2xl font-bold text-emerald-600 mt-1">3</p>
-          </Card>
-          <Card className="!p-4">
-            <p className="text-xs text-slate-500">Network Status</p>
-            <p className="text-sm font-bold text-emerald-600 mt-1">Healthy</p>
-          </Card>
+          </div>
+          <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4">
+            <p className="text-xs text-slate-400">Validator Quorum Threshold</p>
+            <p className="text-2xl font-bold text-purple-400 mt-1">4 of 5 Nodes</p>
+            <p className="text-[10px] text-slate-500">80% Supermajority Required</p>
+          </div>
+          <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4">
+            <p className="text-xs text-slate-400">Total Proposals</p>
+            <p className="text-2xl font-bold text-white mt-1">{proposals.length}</p>
+            <p className="text-[10px] text-emerald-400">{proposals.filter(p => p.status === 'approved').length} Approved</p>
+          </div>
+          <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4">
+            <p className="text-xs text-slate-400">Network Consensus Health</p>
+            <p className="text-sm font-bold text-emerald-400 mt-1 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> 100% Operational
+            </p>
+            <p className="text-[10px] text-slate-500">Zero Latency Sync</p>
+          </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex items-center gap-1 bg-white rounded-xl border border-slate-200 p-1 mb-6 max-w-md">
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 bg-slate-950 border border-slate-800 p-1.5 rounded-2xl max-w-md">
           {(['proposals', 'network', 'rules'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-                activeTab === tab ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-50'
+              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                activeTab === tab ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              {tab === 'proposals' ? 'Proposals' : tab === 'network' ? 'Validator Network' : 'Election Rules'}
+              {tab === 'proposals' ? 'Proposals' : tab === 'network' ? 'Validator Nodes' : 'Election Rules'}
             </button>
           ))}
         </div>
@@ -73,58 +133,70 @@ export default function ValidatorDashboard() {
         {/* Proposals Tab */}
         {activeTab === 'proposals' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-slate-900">Governance Proposals</h2>
-            {recentProposals.map((proposal) => (
-              <div key={proposal.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <div className="flex items-start justify-between mb-3">
+            <h2 className="text-base font-bold text-white">Rule Change Proposals Requiring Quorum</h2>
+            {proposals.map((proposal) => (
+              <div key={proposal.id} className="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono text-slate-400">{proposal.proposalNumber}</span>
+                      <span className="text-xs font-mono font-bold text-purple-400">{proposal.proposalNumber}</span>
                       <StatusBadge status={proposal.status} />
                     </div>
-                    <h3 className="text-base font-semibold text-slate-900 mt-1">{proposal.title}</h3>
+                    <h3 className="text-base font-bold text-white mt-1">{proposal.title}</h3>
                   </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-1">
-                      <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      <span className="text-sm font-bold text-emerald-600">{proposal.approvals}/{proposal.totalValidators}</span>
+
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <span className="text-sm font-extrabold text-purple-400">{proposal.approvals}/{proposal.totalValidators} Approvals</span>
+                      <p className="text-[10px] text-slate-500">Quorum Target: {proposal.requiredQuorum}/5</p>
                     </div>
-                    <p className="text-[10px] text-slate-400">Quorum: {proposal.requiredQuorum}/{proposal.totalValidators}</p>
                   </div>
                 </div>
-                <p className="text-sm text-slate-600 mb-4">{proposal.description}</p>
 
-                {/* Validator Votes */}
-                <div className="space-y-1.5 bg-slate-50 rounded-lg p-4">
-                  <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Validator Votes</p>
-                  {proposal.validatorVotes.map((vote) => (
-                    <div key={vote.validatorId} className="flex items-center justify-between py-1">
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[9px] font-bold text-slate-600">
-                          {validators.find((v) => v.id === vote.validatorId)?.shortName}
-                        </span>
-                        <span className="text-xs text-slate-700">{vote.validatorName}</span>
-                      </div>
-                      <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                        vote.decision === 'approve' ? 'bg-emerald-100 text-emerald-700' :
-                        vote.decision === 'reject' ? 'bg-red-100 text-red-700' :
-                        vote.decision === 'abstain' ? 'bg-slate-100 text-slate-500' :
-                        'bg-amber-100 text-amber-700'
-                      }`}>
-                        {vote.decision ? vote.decision.toUpperCase() : 'PENDING'}
-                      </span>
-                    </div>
-                  ))}
+                <p className="text-xs text-slate-300 leading-relaxed">{proposal.description}</p>
+
+                {/* Validator Votes Grid */}
+                <div className="bg-slate-900/80 rounded-xl p-4 border border-slate-800 space-y-2">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">CSO Consensus Ledger</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    {validators.map((val) => {
+                      const vote = proposal.validatorVotes?.find((v) => v.validatorId === val.id);
+                      const isMe = val.id === selectedValidator;
+                      return (
+                        <div key={val.id} className={`flex items-center justify-between p-2.5 rounded-xl border text-xs ${
+                          isMe ? 'bg-purple-950/30 border-purple-500/40' : 'bg-slate-950 border-slate-800'
+                        }`}>
+                          <span className="font-semibold text-slate-300 truncate max-w-[130px]">
+                            {val.shortName} {isMe && '(You)'}
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md uppercase ${
+                            vote?.decision === 'approve' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                            vote?.decision === 'reject' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
+                            'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                          }`}>
+                            {vote?.decision || 'PENDING'}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* Actions */}
-                {proposal.status === 'pending' && (
-                  <div className="mt-4 flex items-center gap-3">
-                    <Button variant="success" size="sm" icon={<CheckCircle className="w-4 h-4" />}>Approve</Button>
-                    <Button variant="danger" size="sm" icon={<XCircle className="w-4 h-4" />}>Reject</Button>
-                    <Button variant="ghost" size="sm" icon={<Eye className="w-4 h-4" />}>Details</Button>
-                  </div>
-                )}
+                {/* Action Buttons */}
+                <div className="flex items-center gap-3 pt-2">
+                  <button
+                    onClick={() => handleVoteProposal(proposal.id, 'approve')}
+                    className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-md"
+                  >
+                    <CheckCircle2 className="w-4 h-4" /> Cast Approval
+                  </button>
+                  <button
+                    onClick={() => handleVoteProposal(proposal.id, 'reject')}
+                    className="inline-flex items-center gap-1.5 bg-red-600 hover:bg-red-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-md"
+                  >
+                    <XCircle className="w-4 h-4" /> Reject Proposal
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -132,77 +204,52 @@ export default function ValidatorDashboard() {
 
         {/* Network Tab */}
         {activeTab === 'network' && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-slate-900">Validator Network</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {validators.map((v) => (
-                <div key={v.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center text-sm font-bold text-violet-700">{v.shortName}</span>
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">{v.name}</p>
-                      <StatusBadge status={v.status} />
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {validators.map((v) => (
+              <div key={v.id} className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center font-bold text-purple-300">
+                    {v.shortName}
                   </div>
-                  <p className="text-xs text-slate-500 mb-3">{v.description}</p>
-                  <div className="grid grid-cols-2 gap-3 text-center">
-                    <div className="bg-slate-50 rounded-lg p-2">
-                      <p className="text-sm font-bold text-slate-900">{v.totalVotes}</p>
-                      <p className="text-[10px] text-slate-500">Total Votes</p>
-                    </div>
-                    <div className="bg-slate-50 rounded-lg p-2">
-                      <p className="text-sm font-bold text-slate-900">{v.participationRate}%</p>
-                      <p className="text-[10px] text-slate-500">Participation</p>
-                    </div>
+                  <div>
+                    <h4 className="font-bold text-sm text-white">{v.name}</h4>
+                    <StatusBadge status={v.status} />
                   </div>
                 </div>
-              ))}
-            </div>
+                <p className="text-xs text-slate-400">{v.description}</p>
+                <div className="grid grid-cols-2 gap-2 text-center text-xs pt-2">
+                  <div className="bg-slate-900 p-2 rounded-lg">
+                    <p className="font-bold text-white">{v.totalVotes}</p>
+                    <p className="text-[10px] text-slate-500">Votes Cast</p>
+                  </div>
+                  <div className="bg-slate-900 p-2 rounded-lg">
+                    <p className="font-bold text-emerald-400">{v.participationRate}%</p>
+                    <p className="text-[10px] text-slate-500">Participation</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
         {/* Rules Tab */}
         {activeTab === 'rules' && (
-          <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-slate-900">Election Rules</h2>
-            <Card title="Election Configuration" icon={<Scale className="w-5 h-5" />}>
-              <div className="space-y-3">
-                {[
-                  { label: 'Election Name', value: demoElection.name },
-                  { label: 'Status', value: demoElection.status },
-                  { label: 'Start Date', value: new Date(demoElection.startDate).toLocaleString() },
-                  { label: 'End Date', value: new Date(demoElection.endDate).toLocaleString() },
-                  { label: 'Voting Method', value: demoElection.votingMethod },
-                  { label: 'Seats', value: String(demoElection.seats) },
-                  { label: 'Eligibility', value: demoElection.eligibilityRules },
-                ].map((rule) => (
-                  <div key={rule.label} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                    <span className="text-sm text-slate-500">{rule.label}</span>
-                    <span className="text-sm font-medium text-slate-900">{rule.value}</span>
-                  </div>
-                ))}
+          <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 space-y-4">
+            <h3 className="font-bold text-base text-white">Immutable Election Governance Protocol</h3>
+            <div className="space-y-3 text-xs">
+              <div className="flex justify-between py-2 border-b border-slate-800">
+                <span className="text-slate-400">Total Validator Nodes</span>
+                <span className="font-bold text-white">5 Organizations</span>
               </div>
-            </Card>
-            <Card title="Governance Rules" icon={<Scale className="w-5 h-5" />}>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-500">Total Validators</span>
-                  <span className="text-sm font-medium text-slate-900">5</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-500">Required Quorum</span>
-                  <span className="text-sm font-medium text-slate-900">4 of 5</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-slate-100">
-                  <span className="text-sm text-slate-500">Protected Changes</span>
-                  <span className="text-sm font-medium text-slate-900">Requires quorum approval</span>
-                </div>
-                <div className="flex items-center justify-between py-2">
-                  <span className="text-sm text-slate-500">Unauthorized Changes</span>
-                  <span className="text-sm font-medium text-red-600">Rejected by smart contract</span>
-                </div>
+              <div className="flex justify-between py-2 border-b border-slate-800">
+                <span className="text-slate-400">Required Approval Quorum</span>
+                <span className="font-bold text-purple-400">4 of 5 (80%)</span>
               </div>
-            </Card>
+              <div className="flex justify-between py-2 border-b border-slate-800">
+                <span className="text-slate-400">Direct Admin Modifications</span>
+                <span className="font-bold text-red-400">Blocked by Smart Contract</span>
+              </div>
+            </div>
           </div>
         )}
       </main>

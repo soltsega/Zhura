@@ -127,8 +127,8 @@ export default function ExpensesPage() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyData}>
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} />
-                <Tooltip formatter={(v: number) => `${(v / 1000000).toFixed(2)}M ETB`} />
+                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v: any) => `${((v || 0) / 1000000).toFixed(0)}M`} />
+                <Tooltip formatter={(v: any) => `${((v || 0) / 1000000).toFixed(2)}M ETB`} />
                 <Bar dataKey="amount" fill="#3b82f6" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
