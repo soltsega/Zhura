@@ -119,6 +119,7 @@ Do not commit real secrets or `.env` files.
 - Frontend scripts and dependencies are declared in `frontend/package.json`.
 - Backend dependencies are pinned in `backend/requirements.txt`.
 - Smart contract scripts and commands are declared in `blockchain/package.json`.
+- GitHub Actions runs frontend lint/build, a backend Python syntax check, and blockchain compile/tests on pushes and pull requests. See [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 - Additional product and prototype scope notes are in [`doc/CAPABILITIES_AND_LIMITATIONS.md`](doc/CAPABILITIES_AND_LIMITATIONS.md) and [`doc/description.md`](doc/description.md).
 - `serve.js` serves the built frontend from `frontend/dist` on port `4181`; create that build first with `npm run build` in `frontend/`.
 
