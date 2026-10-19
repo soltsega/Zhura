@@ -1,6 +1,6 @@
-# ዝሁራ (VeriVote) — Platform Capabilities & Limitations Guide
+# ዝሁራ (Zhura) — Platform Capabilities & Limitations Guide
 
-**VeriVote** is a **Governance-as-a-Service (GaaS)** trust infrastructure designed to enable organizations, banks, corporations, universities, NGOs, and civic entities to conduct secure, transparent, and independently auditable elections.
+**Zhura** is a **Governance-as-a-Service (GaaS)** trust infrastructure designed to enable organizations, banks, corporations, universities, NGOs, and civic entities to conduct secure, transparent, and independently auditable elections.
 
 This document outlines the operational capabilities (**what the platform CAN do**) and current scope boundaries (**what the platform CANNOT do**).
 
@@ -78,9 +78,9 @@ This document outlines the operational capabilities (**what the platform CAN do*
 | :--- | :--- | :--- |
 | **Frontend** | React 19, TypeScript, Tailwind CSS v4, Lucide Icons, Recharts | Fully Functional |
 | **Backend API** | Python, FastAPI, SQLAlchemy, Pydantic | Fully Functional (`http://localhost:8000`) |
-| **Database** | SQLite / PostgreSQL | Active (`zihura.db`) |
+| **Database** | SQLite / PostgreSQL | Active (`zhura.db`) |
 | **Blockchain** | Solidity, Hardhat, Ethers.js | Local Dev Node / Mock |
 
 ---
 
-*Document compiled for Zhura / VeriVote Platform Architecture & Operational Scope.*
+*Document compiled for Zhura / ዝሁራ Platform Architecture & Operational Scope.*

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import BrandMark from '@/components/common/BrandMark';
+import SiteFooter from '@/components/common/SiteFooter';
 import {
-  Shield, Eye, Vote, Scale, FileText, Users,
+  Eye, Vote, Scale, FileText, Users,
   Building2, Lock, ArrowRight, Zap, CheckCircle2,
   ChevronRight, Activity, ShieldCheck, Cpu
 } from 'lucide-react';
@@ -22,13 +24,11 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
+              <BrandMark className="h-10 w-10 rounded-full shadow-lg shadow-blue-500/20" />
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xl font-bold text-white tracking-tight">ዝሁራ</span>
-                  <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">VeriVote</span>
+                  <span className="text-xl font-bold text-white tracking-tight">Zhura</span>
+                  <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">ዝሁራ</span>
                 </div>
                 <p className="text-[10px] text-slate-400 tracking-widest uppercase">Digital Governance Infrastructure</p>
               </div>
@@ -75,7 +75,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="mt-6 text-base sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto font-normal">
-              VeriVote transforms elections from processes participants are expected to trust into processes whose critical records and decisions can be <em>independently verified</em>.
+              Zhura transforms elections from processes participants are expected to trust into processes whose critical records and decisions can be <em>independently verified</em>.
             </p>
 
             {/* CTAs */}
@@ -274,15 +274,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950 py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-blue-500" />
-            <span className="font-bold text-slate-300">ዝሁራ — VeriVote Platform</span>
-          </div>
-          <p>© 2026 ዝሁራ Trust Infrastructure. All rights reserved.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

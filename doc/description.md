@@ -2,11 +2,11 @@ Yes. If you are going to give this to a coding model such as **Freebuff** and as
 
 Here is a copy-paste-ready prompt. I have designed it so the model understands the **business purpose, UI, architecture, roles, workflows, and demo requirements**.
 
-# Build Specification: VeriVote
+# Build Specification: Zhura
 
 ## 1. Product Name
 
-**VeriVote — Trust Infrastructure for Digital Elections & Governance**
+**Zhura — Trust Infrastructure for Digital Elections & Governance**
 
 Tagline:
 
@@ -16,9 +16,9 @@ Tagline:
 
 # 2. Product Vision
 
-Build a professional, startup-quality web application called **VeriVote**.
+Build a professional, startup-quality web application called **Zhura**.
 
-VeriVote is a **Governance-as-a-Service (GaaS)** platform that enables organizations to conduct secure, transparent, and independently auditable elections and governance processes.
+Zhura is a **Governance-as-a-Service (GaaS)** platform that enables organizations to conduct secure, transparent, and independently auditable elections and governance processes.
 
 The initial use case is election management, but the platform must be designed to support:
 
@@ -38,7 +38,7 @@ It should look like a **professional technology startup/SaaS product** that coul
 
 The key value proposition is:
 
-> **VeriVote transforms elections from a process participants are expected to trust into a process whose critical records and decisions can be independently verified.**
+> **Zhura transforms elections from a process participants are expected to trust into a process whose critical records and decisions can be independently verified.**
 
 ---
 
@@ -59,7 +59,7 @@ There can be concerns around:
 * Difficulty reconciling records
 * Public distrust even when an election may have been conducted fairly
 
-VeriVote addresses this by creating a **shared, tamper-evident audit infrastructure**.
+Zhura addresses this by creating a **shared, tamper-evident audit infrastructure**.
 
 The election authority can administer the election, but critical governance actions are independently validated by authorized validator organizations.
 
@@ -225,7 +225,7 @@ Do not deploy to mainnet.
 Create a clean monorepo:
 
 ```text
-verivote/
+zhura/
 │
 ├── frontend/
 │   ├── src/
@@ -291,7 +291,7 @@ Do NOT make it look like a cryptocurrency website.
 
 Do NOT use excessive blockchain/crypto imagery.
 
-Do NOT use a generic template without adapting it to VeriVote.
+Do NOT use a generic template without adapting it to Zhura.
 
 ---
 
@@ -302,7 +302,7 @@ Create a dashboard similar to a professional enterprise election-management plat
 Sidebar:
 
 ```text
-VERIVOTE
+Zhura
 Trust in Every Vote
 
 Dashboard
@@ -804,7 +804,7 @@ The election authority can propose changes,
 but cannot unilaterally execute protected changes.
 ```
 
-This is a key demonstration of VeriVote's value proposition.
+This is a key demonstration of Zhura's value proposition.
 
 ---
 
@@ -917,7 +917,7 @@ It should look more like a modern public information website than an admin dashb
 Header:
 
 ```text
-VERIVOTE
+Zhura
 
 Elections
 Results
@@ -1201,21 +1201,21 @@ Create easy demo accounts.
 Administrator:
 
 ```text
-admin@verivote.demo
+admin@zhura.demo
 password: demo123
 ```
 
 Validator:
 
 ```text
-validator@verivote.demo
+validator@zhura.demo
 password: demo123
 ```
 
 Voter:
 
 ```text
-voter@verivote.demo
+voter@zhura.demo
 password: demo123
 ```
 
@@ -1323,7 +1323,7 @@ This should be the primary startup demonstration.
 
 # 29. Business Model
 
-VeriVote is not intended to be a philanthropic project.
+Zhura is not intended to be a philanthropic project.
 
 Position it as a commercial technology company.
 
@@ -1389,7 +1389,7 @@ The platform should therefore use configurable election types.
 
 # 31. Landing Page
 
-Create a professional landing page for VeriVote.
+Create a professional landing page for Zhura.
 
 Hero:
 
@@ -1415,7 +1415,7 @@ Records require independent verification.
 
 ### Solution
 
-Explain VeriVote.
+Explain Zhura.
 
 ### How It Works
 
@@ -1567,7 +1567,7 @@ The finished application should feel like a **real startup product**, not a scho
 
 A person seeing the demo should immediately understand:
 
-1. What problem VeriVote solves.
+1. What problem Zhura solves.
 2. Who pays for it.
 3. Why blockchain is being used.
 4. How independent validators increase trust.
@@ -1578,7 +1578,7 @@ A person seeing the demo should immediately understand:
 
 The core message should be:
 
-> **VeriVote does not sell blockchain. VeriVote sells verifiable governance.**
+> **Zhura does not sell blockchain. Zhura sells verifiable governance.**
 
 Build the UI first with realistic demo data, then connect the backend and blockchain functionality.
 

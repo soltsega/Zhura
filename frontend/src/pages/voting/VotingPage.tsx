@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, ArrowRight, ArrowLeft, AlertTriangle, Copy, Check, Lock, RefreshCw, FileText } from 'lucide-react';
+import { CheckCircle2, ArrowRight, ArrowLeft, AlertTriangle, Copy, Check, Lock, RefreshCw, FileText } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { demoElection, candidates } from '@/data/mockData';
 import { useNavigate } from 'react-router-dom';
+import BrandMark from '@/components/common/BrandMark';
+import SiteFooter from '@/components/common/SiteFooter';
 
 type Step = 'verify' | 'select' | 'confirm' | 'success' | 'duplicate';
 
@@ -44,11 +46,9 @@ export default function VotingPage() {
       <header className="bg-slate-950/80 backdrop-blur-xl border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30">
-              <Shield className="w-5 h-5 text-white" />
-            </div>
+            <BrandMark className="h-10 w-10 rounded-full shadow-lg shadow-blue-600/30" />
             <div>
-              <h1 className="text-base font-bold text-white tracking-tight">ዝሁራ — VeriVote Voting Booth</h1>
+              <h1 className="text-base font-bold text-white tracking-tight">ዝሁራ — Zhura Voting Booth</h1>
               <p className="text-[10px] text-slate-400 uppercase tracking-widest">End-to-End Verifiable Digital Election</p>
             </div>
           </div>
@@ -300,9 +300,7 @@ export default function VotingPage() {
         </div>
       </main>
 
-      <footer className="py-4 text-center text-xs text-slate-500 border-t border-slate-800">
-        ዝሁራ — VeriVote Privacy-Preserving Voting System
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

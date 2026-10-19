@@ -3,17 +3,17 @@ version: "3.8"
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: zihura-db
+    container_name: zhura-db
     environment:
-      POSTGRES_USER: zihura
-      POSTGRES_PASSWORD: zihura_secret
-      POSTGRES_DB: zihura_db
+      POSTGRES_USER: zhura
+      POSTGRES_PASSWORD: zhura_secret
+      POSTGRES_DB: zhura_db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U zihura -d zihura_db"]
+      test: ["CMD-SHELL", "pg_isready -U zhura -d zhura_db"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,11 +22,11 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: zihura-api
+    container_name: zhura-api
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://zihura:zihura_secret@postgres:5432/zihura_db
+      DATABASE_URL: postgresql://zhura:zhura_secret@postgres:5432/zhura_db
       USE_MOCK_BLOCKCHAIN: "true"
       CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000"]'
     depends_on:
@@ -40,7 +40,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: zihura-web
+    container_name: zhura-web
     ports:
       - "5173:5173"
     depends_on:
@@ -52,7 +52,7 @@ services:
 
   blockchain:
     image: node:20-alpine
-    container_name: zihura-chain
+    container_name: zhura-chain
     working_dir: /app
     ports:
       - "8545:8545"

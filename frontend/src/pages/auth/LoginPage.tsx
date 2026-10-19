@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, Eye, EyeOff, ArrowRight, UserCheck, Scale, Vote, Lock } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, UserCheck, Scale, Vote, Lock } from 'lucide-react';
 import { demoAccounts } from '@/data/mockData';
+import BrandMark from '@/components/common/BrandMark';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -46,12 +47,10 @@ export default function LoginPage() {
 
         <div className="relative z-10">
           <Link to="/" className="inline-flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
+            <BrandMark className="h-11 w-11 rounded-full shadow-lg shadow-blue-500/20" />
             <div>
-              <span className="text-xl font-bold text-white tracking-tight">ዝሁራ</span>
-              <p className="text-[10px] text-slate-400 tracking-widest uppercase">VeriVote Enterprise</p>
+              <span className="text-xl font-bold text-white tracking-tight">Zhura · ዝሁራ</span>
+              <p className="text-[10px] text-slate-400 tracking-widest uppercase">Zhura Enterprise</p>
             </div>
           </Link>
         </div>
@@ -68,16 +67,21 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="relative z-10 text-xs text-slate-500">
-          © 2026 ዝሁራ Trust Infrastructure.
-        </div>
+        <footer className="relative z-10 text-xs text-slate-500">
+          <p>© {new Date().getFullYear()} Zhura · Trust in Every Vote.</p>
+          <p className="mt-2">Prototype experience · Demo data only</p>
+          <nav className="mt-3 flex gap-4" aria-label="Footer">
+            <Link className="hover:text-slate-300" to="/">Home</Link>
+            <Link className="hover:text-slate-300" to="/portal">Public portal</Link>
+          </nav>
+        </footer>
       </div>
 
       {/* Right Login Form */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-slate-950">
         <div className="w-full max-w-md space-y-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-white">Sign in to VeriVote</h1>
+            <h1 className="text-2xl font-bold text-white">Sign in to Zhura</h1>
             <p className="text-xs text-slate-400 mt-1">Select a demo role or enter your credentials</p>
           </div>
 
@@ -155,7 +159,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@verivote.et"
+                placeholder="admin@zhura.et"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-900 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -187,6 +191,7 @@ export default function LoginPage() {
               Sign In
             </button>
           </form>
+          <p className="text-center text-[11px] leading-relaxed text-slate-500">Zhura is a prototype. Demo accounts use fictional data and are not for real elections.</p>
         </div>
       </div>
     </div>

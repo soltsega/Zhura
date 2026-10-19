@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  console.log("🗳️  Deploying Zihura smart contracts...\n");
+  console.log("🗳️  Deploying Zhura smart contracts...\n");
 
   const [deployer] = await ethers.getSigners();
   console.log("Deploying with account:", deployer.address);

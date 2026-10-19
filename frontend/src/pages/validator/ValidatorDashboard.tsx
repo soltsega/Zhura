@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { Shield, CheckCircle2, XCircle, Scale, Building2, Check, RefreshCw, AlertCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Scale, Building2, Check, RefreshCw, AlertCircle } from 'lucide-react';
 import { StatusBadge, Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { proposals as initialProposals, validators, demoElection } from '@/data/mockData';
 import { useNavigate } from 'react-router-dom';
+import BrandMark from '@/components/common/BrandMark';
+import SiteFooter from '@/components/common/SiteFooter';
 
 export default function ValidatorDashboard() {
   const [activeTab, setActiveTab] = useState<'proposals' | 'network' | 'rules'>('proposals');
@@ -46,9 +48,7 @@ export default function ValidatorDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-600/30">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
+              <BrandMark className="h-10 w-10 rounded-full shadow-lg shadow-purple-600/30" />
               <div>
                 <div className="flex items-center gap-2">
                   <h1 className="text-lg font-bold text-white tracking-tight">Validator Network Console</h1>
@@ -253,6 +253,7 @@ export default function ValidatorDashboard() {
           </div>
         )}
       </main>
+      <SiteFooter />
     </div>
   );
 }

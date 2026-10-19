@@ -1,4 +1,4 @@
-"""Database seeding script — populates demo data for Zihura prototype.
+"""Database seeding script — populates demo data for Zhura prototype.
 
 Run with: python -m app.seed
 """
@@ -29,7 +29,7 @@ def seed_database():
     db = SessionLocal()
     blockchain = MockBlockchainService()
 
-    print("🗳️  Seeding Zihura database...")
+    print("🗳️  Seeding Zhura database...")
 
     # Check if already seeded
     if db.query(User).count() > 0:
@@ -42,20 +42,20 @@ def seed_database():
     # ──────────────────────────────────────────────
     users = [
         User(
-            email="admin@zihura.demo",
+            email="admin@zhura.demo",
             hashed_password=get_password_hash("demo123"),
             full_name="Election Administrator",
             role=UserRole.ADMIN,
         ),
         User(
-            email="validator@zihura.demo",
+            email="validator@zhura.demo",
             hashed_password=get_password_hash("demo123"),
             full_name="Addis Transparency Organization",
             role=UserRole.VALIDATOR,
             validator_id=1,
         ),
         User(
-            email="voter@zihura.demo",
+            email="voter@zhura.demo",
             hashed_password=get_password_hash("demo123"),
             full_name="Demo Voter",
             role=UserRole.VOTER,
@@ -303,9 +303,9 @@ def seed_database():
 
     print("\n🎉 Database seeded successfully!")
     print("   Demo accounts:")
-    print("     admin@zihura.demo / demo123")
-    print("     validator@zihura.demo / demo123")
-    print("     voter@zihura.demo / demo123")
+    print("     admin@zhura.demo / demo123")
+    print("     validator@zhura.demo / demo123")
+    print("     voter@zhura.demo / demo123")
 
 
 if __name__ == "__main__":

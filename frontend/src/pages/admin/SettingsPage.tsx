@@ -17,7 +17,7 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-              <input type="email" defaultValue="admin@zihura.demo" className="w-full px-3 py-2 border border-slate-300 bg-slate-50 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white outline-none transition-all" />
+              <input type="email" defaultValue="admin@zhura.demo" className="w-full px-3 py-2 border border-slate-300 bg-slate-50 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:bg-white outline-none transition-all" />
             </div>
           </div>
         </Card>

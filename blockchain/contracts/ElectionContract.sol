@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 /**
  * @title ElectionContract
  * @notice Manages election lifecycle: creation, opening, closing, and candidate registration.
- * @dev Part of the Zihura governance infrastructure.
+ * @dev Part of the Zhura governance infrastructure.
  */
 contract ElectionContract {
     struct Election {

@@ -1,8 +1,8 @@
-# Zihura
+# Zhura
 
 **Trust in Every Vote.**
 
-Zihura is a prototype governance and election platform. It brings together an election management interface, a FastAPI service, a relational database, and Solidity contracts for local development. The project is intended for demonstration and development with simulated data.
+Zhura is a prototype governance and election platform. It brings together an election management interface, a FastAPI service, a relational database, and Solidity contracts for local development. The project is intended for demonstration and development with simulated data.
 
 > **Prototype notice:** This software is not certified or suitable for conducting real elections. Do not use real voter information. The demo uses mock data and can run with a simulated blockchain; it does not provide production-grade ballot secrecy or identity verification.
 
@@ -61,7 +61,7 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-The backend reads configuration from environment variables (the settings are defined in `backend/app/config.py`). To use the included example configuration, copy `backend/.env.example` to `backend/.env` and adjust values for your environment. The example uses PostgreSQL; for a simple local run, set `DATABASE_URL=sqlite:///./zihura.db` instead.
+The backend reads configuration from environment variables (the settings are defined in `backend/app/config.py`). To use the included example configuration, copy `backend/.env.example` to `backend/.env` and adjust values for your environment. The example uses PostgreSQL; for a simple local run, set `DATABASE_URL=sqlite:///./zhura.db` instead.
 
 Start the service from `backend/`:
 

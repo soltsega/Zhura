@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import BrandMark from '@/components/common/BrandMark';
+import SiteFooter from '@/components/common/SiteFooter';
 import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Vote, Users, UserCheck, Scale, DollarSign,
@@ -46,16 +48,14 @@ export function AdminLayout() {
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-800/80 bg-slate-950/40">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-blue-500/20">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
+          <BrandMark className="h-10 w-10 flex-shrink-0 rounded-full shadow-md shadow-blue-500/20" />
           {sidebarOpen && (
             <div className="overflow-hidden">
               <div className="flex items-center gap-1.5">
-                <h1 className="text-white font-bold text-lg tracking-tight">ዝሁራ</h1>
+                <h1 className="text-white font-bold text-lg tracking-tight">Zhura</h1>
                 <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">v2.0</span>
               </div>
-              <p className="text-[10px] text-slate-400 tracking-widest uppercase">VeriVote Enterprise</p>
+              <p className="text-[10px] text-slate-400 tracking-widest uppercase">Zhura Enterprise</p>
             </div>
           )}
         </div>
@@ -115,10 +115,10 @@ export function AdminLayout() {
               <div className="flex items-center justify-between px-5 py-5 border-b border-slate-800">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
-                    <Shield className="w-5 h-5 text-white" />
+                    <BrandMark className="h-9 w-9 rounded-full" />
                   </div>
                   <div>
-                    <h1 className="text-white font-bold text-lg">ዝሁራ</h1>
+                    <h1 className="text-white font-bold text-lg">Zhura · ዝሁራ</h1>
                     <p className="text-[10px] text-slate-400 tracking-wider uppercase">Trust in Every Vote</p>
                   </div>
                 </div>
@@ -233,6 +233,7 @@ export function AdminLayout() {
         <main className="flex-1 overflow-y-auto p-4 lg:p-6 bg-slate-50/70">
           <Outlet />
         </main>
+        <SiteFooter variant="light" />
       </div>
 
       {/* Governance Attack Simulation Modal */}
@@ -257,7 +258,7 @@ export function AdminLayout() {
             <div className="p-6 space-y-4">
               <p className="text-sm text-slate-600 leading-relaxed">
                 In traditional election software, an administrator can silently alter rules or extend voting windows without oversight.
-                In <strong>VeriVote / ዝሁራ</strong>, governance rules are enforced by smart contracts on a validator quorum.
+                In <strong>Zhura / ዝሁራ</strong>, governance rules are enforced by smart contracts on a validator quorum.
               </p>
 
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs space-y-2">

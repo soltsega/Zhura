@@ -240,7 +240,7 @@ export const dashboardStats: DashboardStats = {
 
 // ─── Demo Accounts ───────────────────────────────────────────────────────────
 export const demoAccounts = {
-  admin: { email: 'admin@zihura.demo', password: 'demo123', name: 'Admin User', role: 'admin' as const },
-  validator: { email: 'validator@zihura.demo', password: 'demo123', name: 'Validator User', role: 'validator' as const },
-  voter: { email: 'voter@zihura.demo', password: 'demo123', name: 'Voter User', role: 'voter' as const },
+  admin: { email: 'admin@zhura.demo', password: 'demo123', name: 'Admin User', role: 'admin' as const },
+  validator: { email: 'validator@zhura.demo', password: 'demo123', name: 'Validator User', role: 'validator' as const },
+  voter: { email: 'voter@zhura.demo', password: 'demo123', name: 'Voter User', role: 'voter' as const },
 };

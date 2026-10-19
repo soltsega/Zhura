@@ -44,21 +44,21 @@ def get_demo_accounts():
     return {
         "accounts": [
             {
-                "email": "admin@zihura.demo",
+                "email": "admin@zhura.demo",
                 "password": "demo123",
                 "role": "admin",
                 "name": "Election Administrator",
                 "description": "Full access to election management and administration",
             },
             {
-                "email": "validator@zihura.demo",
+                "email": "validator@zhura.demo",
                 "password": "demo123",
                 "role": "validator",
                 "name": "Addis Transparency Organization",
                 "description": "Independent validator — review and approve governance proposals",
             },
             {
-                "email": "voter@zihura.demo",
+                "email": "voter@zhura.demo",
                 "password": "demo123",
                 "role": "voter",
                 "name": "Demo Voter",

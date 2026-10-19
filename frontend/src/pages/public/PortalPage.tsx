@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Shield, Search, CheckCircle2, Eye, DollarSign, Vote, Scale, Activity, ArrowRight } from 'lucide-react';
+import { Search, CheckCircle2, DollarSign, Vote, Scale, Activity, ArrowRight } from 'lucide-react';
 import { Card, StatusBadge } from '@/components/common/Card';
 import { dashboardStats, demoElection, candidates, proposals } from '@/data/mockData';
 import { Link } from 'react-router-dom';
+import BrandMark from '@/components/common/BrandMark';
+import SiteFooter from '@/components/common/SiteFooter';
 
 export default function PortalPage() {
   const [ballotRef, setBallotRef] = useState('');
@@ -25,9 +27,7 @@ export default function PortalPage() {
       <header className="bg-slate-950/80 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-600 flex items-center justify-center shadow-lg shadow-amber-600/30">
-              <Eye className="w-6 h-6 text-white" />
-            </div>
+            <BrandMark className="h-10 w-10 rounded-full shadow-lg shadow-amber-600/30" />
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-bold text-white tracking-tight">Public Transparency Portal</h1>
@@ -35,7 +35,7 @@ export default function PortalPage() {
                   Open Audit Access
                 </span>
               </div>
-              <p className="text-xs text-slate-400">VeriVote — Public Governance Telemetry</p>
+              <p className="text-xs text-slate-400">Zhura — Public Governance Telemetry</p>
             </div>
           </div>
 
@@ -175,9 +175,7 @@ export default function PortalPage() {
         </div>
       </main>
 
-      <footer className="py-6 text-center text-xs text-slate-500 border-t border-slate-800">
-        VeriVote Public Open Audit Platform
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
