@@ -1,6 +1,6 @@
 /**
- * Zhura API Service
- * Connects frontend directly to the FastAPI backend at http://127.0.0.1:8000.
+ * Zhuranet API Service
+ * Centralized client for the FastAPI backend service.
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://127.0.0.1:8000');
@@ -168,6 +168,27 @@ export const electionsApi = {
       body: JSON.stringify(data),
     });
   },
+
+  delete: async (id: number | string) => {
+    await authApi.ensureAuth('admin');
+    return apiFetch<void>(`/api/elections/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  activate: async (id: number | string) => {
+    await authApi.ensureAuth('admin');
+    return apiFetch<BackendElection>(`/api/elections/${id}/activate`, {
+      method: 'POST',
+    });
+  },
+
+  close: async (id: number | string) => {
+    await authApi.ensureAuth('admin');
+    return apiFetch<BackendElection>(`/api/elections/${id}/close`, {
+      method: 'POST',
+    });
+  },
 };
 
 // ──────────────────────────────────────────────
@@ -212,6 +233,13 @@ export const candidatesApi = {
     return apiFetch<BackendCandidate>(`/api/candidates/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
+    });
+  },
+
+  delete: async (id: number | string) => {
+    await authApi.ensureAuth('admin');
+    return apiFetch<void>(`/api/candidates/${id}`, {
+      method: 'DELETE',
     });
   },
 };
@@ -263,6 +291,13 @@ export const votersApi = {
     return apiFetch<BackendVoter>('/api/voters', {
       method: 'POST',
       body: JSON.stringify(data),
+    });
+  },
+
+  delete: async (id: number | string) => {
+    await authApi.ensureAuth('admin');
+    return apiFetch<void>(`/api/voters/${id}`, {
+      method: 'DELETE',
     });
   },
 };
@@ -365,9 +400,11 @@ export const proposalsApi = {
 export interface BackendExpense {
   id: number;
   election_id: number;
+  expense_id?: string;
   category: string;
   description: string;
   amount: number;
+  authorized_by?: string;
   vendor?: string;
   receipt_hash?: string;
   status: string;
@@ -381,11 +418,13 @@ export interface ExpenseSummaryItem {
 }
 
 export const expensesApi = {
-  list: async (params: { election_id?: number | string; category?: string } = {}) => {
+  list: async (params: { election_id?: number | string; category?: string; limit?: number; skip?: number } = {}) => {
     await authApi.ensureAuth('admin');
     const query = new URLSearchParams();
     if (params.election_id) query.set('election_id', String(params.election_id));
     if (params.category) query.set('category', params.category);
+    if (params.limit) query.set('limit', String(params.limit));
+    if (params.skip) query.set('skip', String(params.skip));
     const qs = query.toString() ? `?${query.toString()}` : '';
     return apiFetch<{ expenses: BackendExpense[]; total: number; total_amount: number }>(`/api/expenses${qs}`);
   },

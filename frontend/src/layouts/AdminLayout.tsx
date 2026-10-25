@@ -6,7 +6,7 @@ import { Link, useLocation, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Vote, Users, UserCheck, Scale, DollarSign,
   FileText, Shield, Settings, Menu, X,
-  Search, ChevronRight, ShieldAlert, Lock
+  Search, ChevronRight, CheckCircle2
 } from 'lucide-react';
 
 const navItems = [
@@ -24,18 +24,7 @@ const navItems = [
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [showAttackModal, setShowAttackModal] = useState(false);
-  const [attackResult, setAttackResult] = useState<'idle' | 'rejected'>('idle');
   const location = useLocation();
-
-  const handleSimulateAttack = () => {
-    setAttackResult('idle');
-    setShowAttackModal(true);
-  };
-
-  const executeUnauthorizedChange = () => {
-    setAttackResult('rejected');
-  };
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
@@ -51,10 +40,10 @@ export function AdminLayout() {
           {sidebarOpen && (
             <div className="overflow-hidden">
               <div className="flex items-center gap-1.5">
-                <h1 className="text-white font-bold text-lg tracking-tight">Zhura</h1>
-                <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">v2.0</span>
+                <h1 className="text-white font-bold text-lg tracking-tight">Zhuranet</h1>
+                <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">Enterprise</span>
               </div>
-              <p className="text-[10px] text-slate-400 tracking-widest uppercase">Zhura Enterprise</p>
+              <p className="text-[10px] text-slate-400 tracking-widest uppercase">Governance Infrastructure</p>
             </div>
           )}
         </div>
@@ -117,8 +106,8 @@ export function AdminLayout() {
                     <BrandMark className="h-9 w-9 rounded-full" />
                   </div>
                   <div>
-                    <h1 className="text-white font-bold text-lg">Zhura · ዝሁራ</h1>
-                    <p className="text-[10px] text-slate-400 tracking-wider uppercase">Trust in Every Vote</p>
+                    <h1 className="text-white font-bold text-lg">Zhuranet</h1>
+                    <p className="text-[10px] text-slate-400 tracking-wider uppercase">Governance Platform</p>
                   </div>
                 </div>
                 <button onClick={() => setMobileOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
@@ -176,14 +165,15 @@ export function AdminLayout() {
 
           {/* Action Header Items */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Attack Simulation Button */}
-            <button
-              onClick={handleSimulateAttack}
-              className="hidden md:inline-flex items-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1.5 rounded-xl border border-amber-200 transition-colors shadow-xs cursor-pointer active:scale-95"
+            {/* Live Consensus Status Link */}
+            <Link
+              to="/admin/audit"
+              className="hidden md:inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1.5 rounded-xl border border-emerald-200 transition-colors shadow-xs cursor-pointer active:scale-95"
+              title="View live Zhuranet blockchain consensus ledger"
             >
-              <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
-              Simulate Attack
-            </button>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Zhuranet Consensus Active
+            </Link>
 
             {/* Role Navigation Switcher */}
             <RoleNavSwitcher variant="light" showHome />
@@ -209,94 +199,6 @@ export function AdminLayout() {
         </main>
         <SiteFooter variant="light" />
       </div>
-
-      {/* Governance Attack Simulation Modal */}
-      {showAttackModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden">
-            <div className="bg-slate-900 text-white p-5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center">
-                  <ShieldAlert className="w-6 h-6 text-amber-400" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-base">Governance Security Test</h3>
-                  <p className="text-xs text-slate-400">Simulating Unauthorized Administrative Change</p>
-                </div>
-              </div>
-              <button onClick={() => setShowAttackModal(false)} className="text-slate-400 hover:text-white cursor-pointer">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4">
-              <p className="text-sm text-slate-600 leading-relaxed">
-                In traditional election software, an administrator can silently alter rules or extend voting windows without oversight.
-                In <strong>Zhura / ዝሁራ</strong>, governance rules are enforced by smart contracts on a validator quorum.
-              </p>
-
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs space-y-2">
-                <div className="flex justify-between font-medium text-amber-900">
-                  <span>Target Action:</span>
-                  <span>Directly modify voting end time to 22:00</span>
-                </div>
-                <div className="flex justify-between font-medium text-amber-900">
-                  <span>Bypassing:</span>
-                  <span>Validator Quorum Approval Process</span>
-                </div>
-                <div className="flex justify-between font-medium text-amber-900">
-                  <span>Required Quorum:</span>
-                  <span className="font-bold">4 of 5 Independent Validators</span>
-                </div>
-              </div>
-
-              {attackResult === 'rejected' && (
-                <div className="bg-red-50 border-2 border-red-500/80 rounded-xl p-4 animate-shake">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-red-500 rounded-lg text-white font-bold flex-shrink-0">
-                      <Lock className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-red-900 text-sm">TRANSACTION REJECTED</h4>
-                      <p className="text-xs text-red-700 mt-1 font-mono font-medium">
-                        Smart Contract Revert: Unauthorized governance modification.
-                      </p>
-                      <div className="mt-2 text-[11px] text-red-800 bg-red-100/60 p-2 rounded font-mono">
-                        Required: 4/5 validator approvals<br />
-                        Current: 0/5 approvals registered
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="pt-2 flex items-center justify-end gap-3">
-                <button
-                  onClick={() => setShowAttackModal(false)}
-                  className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
-                >
-                  Close
-                </button>
-                {attackResult === 'idle' ? (
-                  <button
-                    onClick={executeUnauthorizedChange}
-                    className="px-5 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-md shadow-red-600/20 transition-all cursor-pointer"
-                  >
-                    Attempt Direct Edit (Bypass Validators)
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setAttackResult('idle')}
-                    className="px-5 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl cursor-pointer"
-                  >
-                    Reset Simulation
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

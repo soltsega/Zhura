@@ -38,10 +38,10 @@ export default function SiteFooter({ variant = 'dark', className = '' }: SiteFoo
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className={`text-xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    Zhura
+                    Zhuranet
                   </span>
                   <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">
-                    ዝሁራ
+                    Enterprise
                   </span>
                 </div>
                 <p className="text-[10px] tracking-widest uppercase text-slate-400 font-medium">
@@ -51,7 +51,7 @@ export default function SiteFooter({ variant = 'dark', className = '' }: SiteFoo
             </Link>
 
             <p className="text-xs leading-relaxed max-w-sm text-slate-400">
-              Zhura is a high-assurance Governance-as-a-Service (GaaS) platform providing tamper-evident,
+              Zhuranet is a high-assurance Governance-as-a-Service (GaaS) platform providing tamper-evident,
               independently auditable election infrastructure for financial institutions, universities, cooperatives,
               and public referendums.
             </p>
@@ -172,16 +172,9 @@ export default function SiteFooter({ variant = 'dark', className = '' }: SiteFoo
                 <FileText className="w-3.5 h-3.5 text-amber-500" />
                 <span>Audited Expenditure Ledgers</span>
               </li>
-              <li>
-                <a
-                  href="http://127.0.0.1:8000/api/docs"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-blue-500 hover:text-blue-400 inline-flex items-center gap-1 font-semibold"
-                >
-                  <span>Interactive API Swagger</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+              <li className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
+                <span>Zero-Knowledge Proof Audit</span>
               </li>
             </ul>
           </div>
@@ -190,7 +183,7 @@ export default function SiteFooter({ variant = 'dark', className = '' }: SiteFoo
         {/* Bottom Bar: Copyright & Compliance */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex flex-wrap items-center gap-2 text-slate-500">
-            <p>© {new Date().getFullYear()} Zhura Technologies Inc. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Zhuranet Technologies Inc. All rights reserved.</p>
             <span className="hidden md:inline">·</span>
             <p>Trust in Every Vote · Governance-as-a-Service</p>
           </div>
