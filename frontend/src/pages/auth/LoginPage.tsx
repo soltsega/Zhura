@@ -90,7 +90,7 @@ export default function LoginPage() {
         </div>
 
         <div className="relative z-10 text-xs text-slate-500">
-          Connected to live backend · Token-based authentication
+          © {new Date().getFullYear()} Zhuranet Technologies Inc.
         </div>
       </div>
 
