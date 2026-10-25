@@ -2,17 +2,17 @@
 
 **Trust in Every Vote.**
 
-Zhura is a prototype governance and election platform. It brings together an election management interface, a FastAPI service, a relational database, and Solidity contracts for local development. The project is intended for demonstration and development with simulated data.
+Zhuranet is a verifiable governance and election platform. It brings together an election management interface, a FastAPI service, a relational database, and Solidity contracts for local development.
 
-> **Prototype notice:** This software is not certified or suitable for conducting real elections. Do not use real voter information. The demo uses mock data and can run with a simulated blockchain; it does not provide production-grade ballot secrecy or identity verification.
+> **Prototype notice:** This software is not certified or suitable for conducting real public elections. Do not use real voter information. The platform operates in a sandbox environment and can run with simulated or local blockchain nodes.
 
 ## What’s included
 
-- **Web app** — React, TypeScript, Vite, Tailwind CSS, React Router, Recharts, and Lucide icons. Includes administrator, validator, voter, and public-facing demo screens.
+- **Web app** — React, TypeScript, Vite, Tailwind CSS, React Router, Recharts, and Lucide icons. Includes administrator, validator, voter, and public-facing governance telemetry screens.
 - **API** — FastAPI with SQLAlchemy models and endpoints for authentication, elections, candidates, voters, votes, proposals, expenses, and audit records.
 - **Data store** — SQLite is the API’s default configuration; Docker Compose starts PostgreSQL for a containerized setup.
 - **Smart contracts** — Solidity contracts and a Hardhat local development node.
-- **Demo behavior** — The frontend currently uses local mock data. Its screens are not wired to the backend API.
+- **Full-Stack Integration** — The web application is connected directly to the FastAPI backend API for real-time authentication, election lifecycle management, consensus proposals, tamper-evident audit records, and voter participation.
 
 ## Repository layout
 
@@ -61,7 +61,7 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-The backend reads configuration from environment variables (the settings are defined in `backend/app/config.py`). To use the included example configuration, copy `backend/.env.example` to `backend/.env` and adjust values for your environment. The example uses PostgreSQL; for a simple local run, set `DATABASE_URL=sqlite:///./zhura.db` instead.
+The backend reads configuration from environment variables (the settings are defined in `backend/app/config.py`). To use the included example configuration, copy `backend/.env.example` to `backend/.env` and adjust values for your environment. The example uses PostgreSQL; for a simple local run, set `DATABASE_URL=sqlite:///./zhuranet.db` instead.
 
 Start the service from `backend/`:
 

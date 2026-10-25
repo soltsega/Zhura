@@ -19,6 +19,7 @@ doc/ROADMAP.md
 *.sqlite
 *.sqlite3
 backend/zhura.db
+backend/zhuranet.db
 backend/zihura.db
 
 # Python cache & bytecode

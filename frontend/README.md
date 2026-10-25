@@ -1,6 +1,6 @@
-# Zhura frontend
+# Zhuranet Frontend
 
-This folder contains the Zhura web application built with React, TypeScript, and Vite.
+This folder contains the Zhuranet web application built with React, TypeScript, and Vite.
 
 From this directory, install dependencies and start the development server:
 
