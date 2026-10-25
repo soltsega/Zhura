@@ -51,3 +51,23 @@ def require_role(*roles: str):
             )
         return user
     return role_checker
+
+
+def get_optional_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+) -> User | None:
+    """Extract and validate the current user if JWT token is present; otherwise return None."""
+    if not credentials:
+        return None
+    payload = decode_token(credentials.credentials)
+    if payload is None:
+        return None
+    user_id = payload.get("user_id")
+    if user_id is None:
+        return None
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or not user.is_active:
+        return None
+    return user
+

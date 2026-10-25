@@ -30,6 +30,7 @@ class AuditListResponse(BaseModel):
 
 
 class BlockchainStatus(BaseModel):
+    network_name: str = "Zhuranet"
     chain_id: int
     block_number: int
     total_records: int

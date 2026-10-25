@@ -22,7 +22,8 @@ app = FastAPI(
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.CORS_ORIGINS if "*" not in settings.CORS_ORIGINS else ["*"],
+    allow_origin_regex=r"https?://.*\.railway\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,8 +42,21 @@ app.include_router(audit.router)
 
 @app.on_event("startup")
 def on_startup():
-    """Initialize database tables on startup."""
+    """Initialize database tables and seed if database is empty."""
     init_db()
+    try:
+        from app.database import SessionLocal
+        from app.models.user import User
+        from app.seed import seed_database
+        db = SessionLocal()
+        try:
+            if db.query(User).count() == 0:
+                seed_database()
+        finally:
+            db.close()
+    except Exception as exc:
+        print(f"Auto-seeding check skipped: {exc}")
+
 
 
 @app.get("/api/health")

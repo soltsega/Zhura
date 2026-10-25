@@ -77,6 +77,7 @@ class MockBlockchainService(BlockchainService):
 
     def get_chain_status(self) -> dict:
         return {
+            "network_name": "Zhuranet",
             "chain_id": self._chain_id,
             "block_number": self._block_number,
             "total_records": len(self._records),
@@ -140,8 +141,10 @@ class LocalBlockchainService(BlockchainService):
         self._ensure_connected()
         if self._connected:
             return {
+                "network_name": "Zhuranet",
                 "chain_id": self._web3.eth.chain_id,
                 "block_number": self._web3.eth.block_number,
+                "total_records": 0,
                 "network_status": "healthy" if self._connected else "disconnected",
                 "validators_online": 5,
                 "total_validators": 5,

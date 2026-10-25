@@ -4,6 +4,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.api.deps import require_role
+from app.models.user import User, UserRole
 from app.models.proposal import Proposal, ProposalVote, ProposalStatus, ValidatorVote
 from app.models.validator import Validator
 from app.schemas.proposal import (
@@ -43,14 +45,22 @@ def get_proposal(proposal_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=ProposalResponse, status_code=status.HTTP_201_CREATED)
-def create_proposal(data: ProposalCreate, db: Session = Depends(get_db)):
-    """Create a new governance proposal."""
+def create_proposal(
+    data: ProposalCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin", "validator")),
+):
+    """Create a new governance proposal (restricted to admin and validator)."""
     # Auto-generate proposal number
     count = db.query(Proposal).count()
     proposal_number = f"#{count + 1:04d}"
 
+    proposed_by = data.proposed_by or current_user.full_name or current_user.email
+    proposal_dict = data.model_dump()
+    proposal_dict["proposed_by"] = proposed_by
+
     proposal = Proposal(
-        **data.model_dump(),
+        **proposal_dict,
         proposal_number=proposal_number,
         status=ProposalStatus.PENDING,
     )
@@ -60,7 +70,7 @@ def create_proposal(data: ProposalCreate, db: Session = Depends(get_db)):
     tx_result = blockchain.record_event(
         event_type="proposal_created",
         data={"title": data.title, "type": data.proposal_type},
-        actor=data.proposed_by,
+        actor=proposed_by,
         election_id=data.election_id,
     )
     proposal.transaction_hash = tx_result["transaction_hash"]
@@ -77,6 +87,7 @@ def vote_on_proposal(
     proposal_id: int,
     data: ProposalVoteRequest,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("validator", "admin")),
 ):
     """Validator votes on a proposal. Checks quorum and updates status."""
     proposal = db.query(Proposal).filter(Proposal.id == proposal_id).first()
@@ -86,8 +97,19 @@ def vote_on_proposal(
     if proposal.status != ProposalStatus.PENDING:
         raise HTTPException(status_code=400, detail="Proposal is not pending")
 
+    # Determine validator ID:
+    # If the caller is a validator user with an assigned validator_id, enforce that ID
+    target_validator_id = data.validator_id
+    if current_user.role == UserRole.VALIDATOR and current_user.validator_id:
+        if data.validator_id and data.validator_id != current_user.validator_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Validator caller cannot submit votes for another validator node (assigned: {current_user.validator_id}, requested: {data.validator_id})",
+            )
+        target_validator_id = current_user.validator_id
+
     # Validate validator exists
-    validator = db.query(Validator).filter(Validator.id == data.validator_id).first()
+    validator = db.query(Validator).filter(Validator.id == target_validator_id).first()
     if not validator:
         raise HTTPException(status_code=404, detail="Validator not found")
 
@@ -96,7 +118,7 @@ def vote_on_proposal(
         db.query(ProposalVote)
         .filter(
             ProposalVote.proposal_id == proposal_id,
-            ProposalVote.validator_id == data.validator_id,
+            ProposalVote.validator_id == target_validator_id,
         )
         .first()
     )
@@ -106,7 +128,7 @@ def vote_on_proposal(
     # Record the vote
     pvote = ProposalVote(
         proposal_id=proposal_id,
-        validator_id=data.validator_id,
+        validator_id=target_validator_id,
         vote=ValidatorVote(data.vote),
         comment=data.comment,
     )

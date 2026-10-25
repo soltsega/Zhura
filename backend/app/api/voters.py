@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.voter import Voter, VoterStatus
 from app.schemas.voter import VoterCreate, VoterUpdate, VoterResponse, VoterListResponse
-from app.api.deps import get_current_user
+from app.api.deps import require_role
 from app.models.user import User
 
 router = APIRouter(prefix="/api/voters", tags=["voters"])
@@ -19,7 +19,7 @@ def list_voters(
     skip: int = 0,
     limit: int = 50,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
     """List voters with optional filters."""
     query = db.query(Voter)
@@ -48,7 +48,7 @@ def list_voters(
 def get_voter(
     voter_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
     """Get a specific voter."""
     voter = db.query(Voter).filter(Voter.id == voter_id).first()
@@ -61,7 +61,7 @@ def get_voter(
 def create_voter(
     data: VoterCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
     """Register a new voter."""
     existing = db.query(Voter).filter(Voter.voter_id == data.voter_id).first()
@@ -80,7 +80,7 @@ def update_voter(
     voter_id: int,
     data: VoterUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
     """Update a voter."""
     voter = db.query(Voter).filter(Voter.id == voter_id).first()

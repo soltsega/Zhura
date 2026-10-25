@@ -8,7 +8,7 @@ from app.database import get_db
 from app.models.expense import Expense, ExpenseCategory, ExpenseStatus
 from app.schemas.expense import ExpenseCreate, ExpenseResponse, ExpenseListResponse, ExpenseSummary
 from app.services.blockchain import get_blockchain_service
-from app.api.deps import get_current_user
+from app.api.deps import get_optional_current_user, require_role
 from app.models.user import User
 
 router = APIRouter(prefix="/api/expenses", tags=["expenses"])
@@ -21,9 +21,9 @@ def list_expenses(
     skip: int = 0,
     limit: int = 50,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
-    """List election expenses."""
+    """List election expenses (public transparency read)."""
     query = db.query(Expense)
     if election_id:
         query = query.filter(Expense.election_id == election_id)
@@ -59,9 +59,9 @@ def get_expense_summary(
 def create_expense(
     data: ExpenseCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    """Record a new election expense."""
+    """Record a new election expense (admin only)."""
     expense_count = db.query(Expense).count()
     expense = Expense(
         **data.model_dump(),

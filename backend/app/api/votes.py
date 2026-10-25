@@ -6,6 +6,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
+from app.api.deps import get_optional_current_user
+from app.models.user import User, UserRole
 from app.models.vote import Vote
 from app.models.voter import Voter, VoterStatus
 from app.models.candidate import Candidate
@@ -18,9 +20,13 @@ router = APIRouter(prefix="/api/votes", tags=["votes"])
 
 
 @router.post("", response_model=VoteConfirmResponse, status_code=status.HTTP_201_CREATED)
-def cast_vote(data: VoteCast, db: Session = Depends(get_db)):
+def cast_vote(
+    data: VoteCast,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_optional_current_user),
+):
     """
-    Cast a vote with double-vote protection.
+    Cast a vote with double-vote protection and eligibility enforcement.
     The backend enforces that each voter can only vote once per election.
     """
     # 1. Find voter by voter_id string
@@ -28,19 +34,41 @@ def cast_vote(data: VoteCast, db: Session = Depends(get_db)):
     if not voter:
         raise HTTPException(status_code=404, detail="Voter not found")
 
-    # 2. Check double-vote
-    if voter.has_voted:
-        existing_vote = (
-            db.query(Vote)
-            .filter(Vote.voter_id == voter.id, Vote.election_id == data.election_id)
-            .first()
+    # 2. Caller identity check: If authenticated as a voter, cannot vote as another voter
+    if current_user and current_user.role == UserRole.VOTER and current_user.voter_id:
+        if voter.id != current_user.voter_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Authenticated user cannot cast a ballot for a different voter identity",
+            )
+
+    # 3. Check voter eligibility status
+    if voter.status in (VoterStatus.SUSPENDED, VoterStatus.INELIGIBLE):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Voter is not eligible to vote (status: {voter.status.value})",
         )
+
+    # 4. Check election registration
+    if voter.election_id != data.election_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Voter is not registered for this election",
+        )
+
+    # 5. Check double-vote per election
+    existing_vote = (
+        db.query(Vote)
+        .filter(Vote.voter_id == voter.id, Vote.election_id == data.election_id)
+        .first()
+    )
+    if existing_vote:
         raise HTTPException(
             status_code=409,
             detail={
                 "success": False,
                 "message": "This voting credential has already been used for this election. Your second ballot was not accepted.",
-                "existing_ballot_reference": existing_vote.ballot_reference if existing_vote else None,
+                "existing_ballot_reference": existing_vote.ballot_reference,
             },
         )
 

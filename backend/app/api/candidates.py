@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.candidate import Candidate
 from app.schemas.candidate import CandidateCreate, CandidateUpdate, CandidateResponse, CandidateListResponse
-from app.api.deps import get_current_user
+from app.api.deps import get_optional_current_user, require_role
 from app.models.user import User
 
 router = APIRouter(prefix="/api/candidates", tags=["candidates"])
@@ -17,9 +17,9 @@ def list_candidates(
     skip: int = 0,
     limit: int = 50,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
-    """List candidates, optionally filtered by election."""
+    """List candidates, optionally filtered by election (publicly readable)."""
     query = db.query(Candidate)
     if election_id:
         query = query.filter(Candidate.election_id == election_id)
@@ -32,9 +32,9 @@ def list_candidates(
 def get_candidate(
     candidate_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
-    """Get a specific candidate."""
+    """Get a specific candidate (publicly readable)."""
     candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
@@ -45,9 +45,9 @@ def get_candidate(
 def create_candidate(
     data: CandidateCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    """Register a new candidate."""
+    """Register a new candidate (admin only)."""
     candidate = Candidate(**data.model_dump())
     db.add(candidate)
     db.commit()
@@ -60,9 +60,9 @@ def update_candidate(
     candidate_id: int,
     data: CandidateUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    """Update a candidate."""
+    """Update a candidate (admin only)."""
     candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
@@ -77,9 +77,9 @@ def update_candidate(
 def delete_candidate(
     candidate_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    """Remove a candidate."""
+    """Remove a candidate (admin only)."""
     candidate = db.query(Candidate).filter(Candidate.id == candidate_id).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")

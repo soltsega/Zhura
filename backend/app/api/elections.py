@@ -1,12 +1,10 @@
-"""Elections API — CRUD operations for elections."""
-
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.election import Election, ElectionStatus
 from app.schemas.election import ElectionCreate, ElectionUpdate, ElectionResponse, ElectionListResponse
-from app.api.deps import get_current_user
+from app.api.deps import get_optional_current_user, require_role
 from app.models.user import User
 
 router = APIRouter(prefix="/api/elections", tags=["elections"])
@@ -18,9 +16,9 @@ def list_elections(
     limit: int = 50,
     status_filter: str = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
-    """List all elections."""
+    """List all elections (publicly readable)."""
     query = db.query(Election)
     if status_filter:
         query = query.filter(Election.status == status_filter)
@@ -33,9 +31,9 @@ def list_elections(
 def get_election(
     election_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User | None = Depends(get_optional_current_user),
 ):
-    """Get a specific election."""
+    """Get a specific election (publicly readable)."""
     election = db.query(Election).filter(Election.id == election_id).first()
     if not election:
         raise HTTPException(status_code=404, detail="Election not found")
@@ -46,9 +44,9 @@ def get_election(
 def create_election(
     data: ElectionCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    """Create a new election."""
+    """Create a new election (admin only)."""
     election = Election(**data.model_dump())
     db.add(election)
     db.commit()
@@ -61,9 +59,9 @@ def update_election(
     election_id: int,
     data: ElectionUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    """Update an election."""
+    """Update an election (admin only)."""
     election = db.query(Election).filter(Election.id == election_id).first()
     if not election:
         raise HTTPException(status_code=404, detail="Election not found")
@@ -80,9 +78,9 @@ def update_election(
 def activate_election(
     election_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    """Activate (open) an election for voting."""
+    """Activate (open) an election for voting (admin only)."""
     election = db.query(Election).filter(Election.id == election_id).first()
     if not election:
         raise HTTPException(status_code=404, detail="Election not found")
@@ -99,9 +97,9 @@ def activate_election(
 def close_election(
     election_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("admin")),
 ):
-    """Close an election."""
+    """Close an election (admin only)."""
     election = db.query(Election).filter(Election.id == election_id).first()
     if not election:
         raise HTTPException(status_code=404, detail="Election not found")
