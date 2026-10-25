@@ -1,4 +1,4 @@
-# Zhura
+# Zhuranet
 
 **Trust in Every Vote.**
 
