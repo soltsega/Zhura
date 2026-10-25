@@ -8,7 +8,7 @@ def get_default_secret_key() -> str:
     if key:
         return key
     # In production or deployed environments without SECRET_KEY, generate an ephemeral cryptographically secure key
-    if os.getenv("ENVIRONMENT") == "production" or os.getenv("RAILWAY_ENVIRONMENT"):
+    if os.getenv("ENVIRONMENT") == "production" or os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RENDER"):
         return secrets.token_urlsafe(32)
     return "zhuranet-dev-insecure-secret-key-change-in-production"
 

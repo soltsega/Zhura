@@ -1,0 +1,49 @@
+services:
+  # ──────────────────────────────────────────────
+  # Backend API (FastAPI)
+  # ──────────────────────────────────────────────
+  - type: web
+    name: zhuranet-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: zhuranet-db
+          property: connectionString
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.12.0
+
+  # ──────────────────────────────────────────────
+  # Frontend Web App (React + Vite Static Site)
+  # ──────────────────────────────────────────────
+  - type: web
+    name: zhuranet-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: zhuranet-api
+          envVarKey: RENDER_EXTERNAL_URL
+
+# ──────────────────────────────────────────────
+# Managed PostgreSQL Database
+# ──────────────────────────────────────────────
+databases:
+  - name: zhuranet-db
+    databaseName: zhuranet
+    user: zhuranet
+    plan: free
