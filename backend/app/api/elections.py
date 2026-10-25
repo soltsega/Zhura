@@ -108,3 +108,18 @@ def close_election(
     db.commit()
     db.refresh(election)
     return election
+
+
+@router.delete("/{election_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_election(
+    election_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """Delete an election (admin only)."""
+    election = db.query(Election).filter(Election.id == election_id).first()
+    if not election:
+        raise HTTPException(status_code=404, detail="Election not found")
+    db.delete(election)
+    db.commit()
+

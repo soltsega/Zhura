@@ -1,4 +1,4 @@
-"""Database seeding script — populates demo data for Zhura prototype.
+"""Database seeding script — populates initial data for Zhuranet platform.
 
 Run with: python -m app.seed
 """
@@ -29,11 +29,11 @@ def seed_database():
     db = SessionLocal()
     blockchain = MockBlockchainService()
 
-    print("🗳️  Seeding Zhura database...")
+    print("[SEED] Seeding Zhuranet database...")
 
     # Check if already seeded
     if db.query(User).count() > 0:
-        print("⚠️  Database already seeded. Skipping.")
+        print("[INFO] Database already seeded. Skipping.")
         db.close()
         return
 
@@ -64,7 +64,7 @@ def seed_database():
     ]
     db.add_all(users)
     db.flush()
-    print("  ✅ 3 demo users created")
+    print("  [OK] 3 initial users created")
 
     # ──────────────────────────────────────────────
     # 2. VALIDATORS
@@ -82,7 +82,7 @@ def seed_database():
         db.add(v)
         validators.append(v)
     db.flush()
-    print("  ✅ 5 validators created")
+    print("  [OK] 5 validators created")
 
     # ──────────────────────────────────────────────
     # 3. ELECTION
@@ -102,7 +102,7 @@ def seed_database():
     )
     db.add(election)
     db.flush()
-    print("  ✅ Election created: ABC Bank Board Election 2026")
+    print("  [OK] Election created: ABC Bank Board Election 2026")
 
     # ──────────────────────────────────────────────
     # 4. CANDIDATES
@@ -131,7 +131,7 @@ def seed_database():
         db.add(c)
         candidates.append(c)
     db.flush()
-    print("  ✅ 5 candidates created")
+    print("  [OK] 5 candidates created")
 
     # ──────────────────────────────────────────────
     # 5. VOTERS (500)
@@ -157,7 +157,7 @@ def seed_database():
         db.add(v)
         voters.append(v)
     db.flush()
-    print("  ✅ 500 voters created (372 voted)")
+    print("  [OK] 500 voters created (372 voted)")
 
     # ──────────────────────────────────────────────
     # 6. PROPOSALS (7 total: 6 approved, 1 rejected)
@@ -207,7 +207,7 @@ def seed_database():
         db.add(p)
         proposals.append(p)
     db.flush()
-    print("  ✅ 7 proposals created")
+    print("  [OK] 7 proposals created")
 
     # ──────────────────────────────────────────────
     # 7. PROPOSAL VOTES
@@ -229,7 +229,7 @@ def seed_database():
             )
             db.add(pv)
     db.flush()
-    print("  ✅ Proposal votes recorded")
+    print("  [OK] Proposal votes recorded")
 
     # ──────────────────────────────────────────────
     # 8. EXPENSES (7.84M ETB total)
@@ -257,7 +257,7 @@ def seed_database():
         db.add(e)
         expenses.append(e)
     db.flush()
-    print("  ✅ 6 expense records created (7.84M ETB total)")
+    print("  [OK] 6 expense records created (7.84M ETB total)")
 
     # ──────────────────────────────────────────────
     # 9. AUDIT RECORDS (simulated blockchain history)
@@ -296,12 +296,12 @@ def seed_database():
         db.add(ar)
         audit_records.append(ar)
     db.flush()
-    print("  ✅ 50 audit records created (simulating 18,342 chain records)")
+    print("  [OK] 50 audit records created (chain history initialized)")
 
     db.commit()
     db.close()
 
-    print("\n🎉 Database seeded successfully!")
+    print("\n[SUCCESS] Database seeded successfully!")
     print("   Demo accounts:")
     print("     admin@zhura.demo / demo123")
     print("     validator@zhura.demo / demo123")

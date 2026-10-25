@@ -91,3 +91,18 @@ def update_voter(
     db.commit()
     db.refresh(voter)
     return voter
+
+
+@router.delete("/{voter_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_voter(
+    voter_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin")),
+):
+    """Remove a voter (admin only)."""
+    voter = db.query(Voter).filter(Voter.id == voter_id).first()
+    if not voter:
+        raise HTTPException(status_code=404, detail="Voter not found")
+    db.delete(voter)
+    db.commit()
+

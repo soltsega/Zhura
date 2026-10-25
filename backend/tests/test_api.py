@@ -1,4 +1,4 @@
-"""Comprehensive integration and security tests for Zhura API."""
+"""Comprehensive integration and security tests for Zhuranet API."""
 
 import pytest
 from datetime import datetime, timedelta

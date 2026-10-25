@@ -1,4 +1,4 @@
-"""Zhura — Governance-as-a-Service Backend
+"""Zhuranet — Governance-as-a-Service Backend
 
 Main FastAPI application entry point.
 Run with: uvicorn app.main:app --reload --port 8000
@@ -12,7 +12,7 @@ from app.api import auth, elections, candidates, voters, votes, proposals, expen
 from app.database import init_db
 
 app = FastAPI(
-    title="Zhura API",
+    title="Zhuranet API",
     description="Governance-as-a-Service backend — secure, transparent, independently auditable elections.",
     version="0.1.0",
     docs_url="/api/docs",
@@ -64,7 +64,7 @@ def health_check():
     """Health check endpoint."""
     return {
         "status": "healthy",
-        "service": "zhura-api",
+        "service": "zhuranet-api",
         "version": "0.1.0",
     }
 
@@ -72,7 +72,7 @@ def health_check():
 @app.get("/")
 def root():
     return {
-        "name": "ዝሁራ (Zhura)",
+        "name": "Zhuranet",
         "tagline": "Trust in Every Vote.",
         "docs": "/api/docs",
     }

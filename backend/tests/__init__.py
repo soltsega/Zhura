@@ -1,1 +1,1 @@
-# Zhura backend tests package
+# Zhuranet backend tests package

@@ -121,10 +121,10 @@ def cast_vote(
     # 8. Update election tallies
     election.votes_cast += 1
     candidate.votes_received += 1
-    if election.votes_cast > 0 and election.total_voters > 0:
-        candidate.vote_percentage = round(
-            (candidate.votes_received / election.votes_cast) * 100, 1
-        )
+    if election.votes_cast > 0:
+        all_candidates = db.query(Candidate).filter(Candidate.election_id == data.election_id).all()
+        for cand in all_candidates:
+            cand.vote_percentage = round((cand.votes_received / election.votes_cast) * 100, 1)
 
     # 9. Create audit record
     audit = AuditRecord(
