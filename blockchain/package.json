@@ -1,7 +1,7 @@
 {
-  "name": "zhura-blockchain",
+  "name": "zhuranet-blockchain",
   "version": "0.1.0",
-  "description": "Zhura blockchain smart contracts for election governance",
+  "description": "Zhuranet blockchain smart contracts for election governance",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",

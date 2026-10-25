@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  console.log("🗳️  Deploying Zhura smart contracts...\n");
+  console.log("[DEPLOY] Deploying Zhuranet smart contracts...\n");
 
   const [deployer] = await ethers.getSigners();
   console.log("Deploying with account:", deployer.address);
@@ -12,28 +12,28 @@ async function main() {
   const election = await ElectionContract.deploy();
   await election.waitForDeployment();
   const electionAddr = await election.getAddress();
-  console.log("✅ ElectionContract deployed to:", electionAddr);
+  console.log("[OK] ElectionContract deployed to:", electionAddr);
 
   // 2. Deploy VotingContract
   const VotingContract = await ethers.getContractFactory("VotingContract");
   const voting = await VotingContract.deploy();
   await voting.waitForDeployment();
   const votingAddr = await voting.getAddress();
-  console.log("✅ VotingContract deployed to:", votingAddr);
+  console.log("[OK] VotingContract deployed to:", votingAddr);
 
   // 3. Deploy GovernanceContract (4 required quorum out of 5 validators)
   const GovernanceContract = await ethers.getContractFactory("GovernanceContract");
   const governance = await GovernanceContract.deploy(4);
   await governance.waitForDeployment();
   const governanceAddr = await governance.getAddress();
-  console.log("✅ GovernanceContract deployed to:", governanceAddr);
+  console.log("[OK] GovernanceContract deployed to:", governanceAddr);
 
-  console.log("\n📋 Contract Addresses:");
+  console.log("\n[SUMMARY] Contract Addresses:");
   console.log("  Election:", electionAddr);
   console.log("  Voting:", votingAddr);
   console.log("  Governance:", governanceAddr);
 
-  console.log("\n🎉 Deployment complete!");
+  console.log("\n[SUCCESS] Deployment complete!");
 }
 
 main().catch((error) => {
