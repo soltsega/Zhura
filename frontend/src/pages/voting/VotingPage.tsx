@@ -1,36 +1,103 @@
-import { useState } from 'react';
-import { CheckCircle2, ArrowRight, ArrowLeft, AlertTriangle, Copy, Check, Lock, RefreshCw, FileText } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CheckCircle2, ArrowRight, ArrowLeft, AlertTriangle, Copy, Check, Lock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/common/Button';
-import { demoElection, candidates } from '@/data/mockData';
 import { useNavigate } from 'react-router-dom';
 import BrandMark from '@/components/common/BrandMark';
 import SiteFooter from '@/components/common/SiteFooter';
+import RoleNavSwitcher from '@/components/common/RoleNavSwitcher';
+import {
+  electionsApi,
+  candidatesApi,
+  votesApi,
+  type BackendElection,
+  type BackendCandidate,
+} from '@/services/api';
 
 type Step = 'verify' | 'select' | 'confirm' | 'success' | 'duplicate';
 
 export default function VotingPage() {
   const [step, setStep] = useState<Step>('verify');
-  const [selectedCandidate, setSelectedCandidate] = useState<string | null>(null);
+  const [election, setElection] = useState<BackendElection | null>(null);
+  const [candidates, setCandidates] = useState<BackendCandidate[]>([]);
+  const [selectedCandidate, setSelectedCandidate] = useState<number | null>(null);
   const [voterId, setVoterId] = useState('VTR-0001');
   const [ballotRef, setBallotRef] = useState('');
+  const [txHash, setTxHash] = useState('');
   const [copied, setCopied] = useState(false);
-  const [hasVoted, setHasVoted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
   const navigate = useNavigate();
 
-  const handleVerify = () => {
-    if (hasVoted && voterId.trim().toUpperCase() === 'VTR-0001') {
-      setStep('duplicate');
-      return;
+  // Load election and candidates from live API
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setPageLoading(true);
+        const electionsRes = await electionsApi.list();
+        const active = electionsRes.elections[0];
+        if (active) {
+          setElection(active);
+          const candRes = await candidatesApi.list(active.id);
+          setCandidates(candRes.candidates);
+        }
+      } catch (err: any) {
+        console.error('Failed to load election data:', err);
+        setErrorMsg('Failed to connect to voting service API.');
+      } finally {
+        setPageLoading(false);
+      }
     }
-    if (voterId.trim()) setStep('select');
+    loadData();
+  }, []);
+
+  const handleVerify = async () => {
+    if (!voterId.trim() || !election) return;
+    setErrorMsg('');
+    setLoading(true);
+
+    try {
+      // Check status with backend
+      const statusRes = await votesApi.getStatus(voterId.trim().toUpperCase(), election.id);
+      if (statusRes.has_voted) {
+        if (statusRes.ballot_reference) setBallotRef(statusRes.ballot_reference);
+        setStep('duplicate');
+      } else {
+        setStep('select');
+      }
+    } catch (err: any) {
+      // If 404 (voter not registered), inform user
+      setErrorMsg(err.message || 'Verification failed. Please check voter ID.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleConfirm = () => {
-    if (selectedCandidate) {
-      const randomRef = `VR-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-      setBallotRef(randomRef);
-      setHasVoted(true);
-      setStep('success');
+  const handleConfirm = async () => {
+    if (!selectedCandidate || !election) return;
+    setLoading(true);
+    setErrorMsg('');
+
+    try {
+      const res = await votesApi.cast({
+        election_id: election.id,
+        candidate_id: selectedCandidate,
+        voter_id: voterId.trim().toUpperCase(),
+      });
+
+      if (res.success) {
+        setBallotRef(res.ballot_reference);
+        setTxHash(res.transaction_hash);
+        setStep('success');
+      }
+    } catch (err: any) {
+      if (err.message && err.message.includes('already been used')) {
+        setStep('duplicate');
+      } else {
+        setErrorMsg(err.message || 'Error casting ballot to blockchain.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,6 +106,19 @@ export default function VotingPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center font-sans">
+        <div className="text-center space-y-3">
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin mx-auto" />
+          <p className="text-sm text-slate-400">Connecting to Live Voting Contract...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const selectedCandObj = candidates.find((c) => c.id === selectedCandidate);
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 font-sans flex flex-col justify-between">
@@ -54,12 +134,7 @@ export default function VotingPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate('/admin')}
-              className="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors cursor-pointer"
-            >
-              Back to Admin
-            </button>
+            <RoleNavSwitcher variant="dark" showHome />
           </div>
         </div>
       </header>
@@ -76,16 +151,22 @@ export default function VotingPage() {
             const isPassed = ['select', 'confirm', 'success'].indexOf(step) > idx;
             return (
               <div key={item.id} className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  isCurrent ? 'bg-blue-600 text-white ring-4 ring-blue-600/30' :
-                  isPassed ? 'bg-emerald-500 text-white' :
-                  'bg-slate-800 text-slate-500 border border-slate-700'
-                }`}>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                    isCurrent
+                      ? 'bg-blue-600 text-white ring-4 ring-blue-600/30'
+                      : isPassed
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-slate-800 text-slate-500 border border-slate-700'
+                  }`}
+                >
                   {isPassed ? <CheckCircle2 className="w-4 h-4" /> : idx + 1}
                 </div>
-                <span className={`text-xs font-semibold hidden sm:inline ${
-                  isCurrent ? 'text-white' : isPassed ? 'text-emerald-400' : 'text-slate-500'
-                }`}>
+                <span
+                  className={`text-xs font-semibold hidden sm:inline ${
+                    isCurrent ? 'text-white' : isPassed ? 'text-emerald-400' : 'text-slate-500'
+                  }`}
+                >
                   {item.label}
                 </span>
                 {idx < 2 && <div className={`w-8 sm:w-12 h-0.5 ${isPassed ? 'bg-emerald-500' : 'bg-slate-800'}`} />}
@@ -96,6 +177,12 @@ export default function VotingPage() {
 
         {/* Card Box */}
         <div className="bg-slate-950/90 rounded-3xl border border-slate-800 shadow-2xl p-6 sm:p-8 backdrop-blur-xl">
+          {errorMsg && (
+            <div className="mb-6 p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-xl text-center">
+              {errorMsg}
+            </div>
+          )}
+
           {/* STEP 1: VERIFY */}
           {step === 'verify' && (
             <div className="space-y-6">
@@ -117,15 +204,28 @@ export default function VotingPage() {
                     value={voterId}
                     onChange={(e) => setVoterId(e.target.value)}
                     placeholder="e.g., VTR-0001"
-                    className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-center text-lg font-mono font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-center text-lg font-mono font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all uppercase"
                   />
                   <p className="text-[11px] text-slate-500 text-center mt-1.5">
-                    Demo credential prefilled: <code className="text-blue-400">VTR-0001</code>
+                    Live voter ID from database: <code className="text-blue-400">VTR-0001</code>
                   </p>
                 </div>
 
-                <Button onClick={handleVerify} className="w-full justify-center !py-3.5" size="lg">
-                  Verify & Proceed <ArrowRight className="w-4 h-4 ml-1" />
+                <Button
+                  onClick={handleVerify}
+                  disabled={loading || !voterId.trim()}
+                  className="w-full justify-center !py-3.5"
+                  size="lg"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Verifying...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1">
+                      Verify & Proceed <ArrowRight className="w-4 h-4 ml-1" />
+                    </span>
+                  )}
                 </Button>
               </div>
             </div>
@@ -138,11 +238,11 @@ export default function VotingPage() {
                 <div className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/20 mb-3">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Credential Verified: {voterId}
                 </div>
-                <h2 className="text-xl font-bold text-white">{demoElection.name}</h2>
+                <h2 className="text-xl font-bold text-white">{election?.name || 'Election Roster'}</h2>
                 <p className="text-xs text-slate-400 mt-1">Select one candidate to cast your vote</p>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
                 {candidates.map((cand) => {
                   const isSelected = selectedCandidate === cand.id;
                   return (
@@ -155,18 +255,27 @@ export default function VotingPage() {
                           : 'bg-slate-900/80 border-slate-800 hover:border-slate-700'
                       }`}
                     >
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm ${
-                        isSelected ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300'
-                      }`}>
-                        {cand.name.split(' ').map(n => n[0]).join('')}
+                      <div
+                        className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm ${
+                          isSelected ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300'
+                        }`}
+                      >
+                        {cand.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')}
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-bold text-white">{cand.name}</p>
-                        <p className="text-xs text-slate-400">{cand.position} · {cand.organization}</p>
+                        <p className="text-xs text-slate-400">
+                          {cand.position} · {cand.organization || 'Candidate'}
+                        </p>
                       </div>
-                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                        isSelected ? 'border-blue-500 bg-blue-500 text-white' : 'border-slate-600'
-                      }`}>
+                      <div
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          isSelected ? 'border-blue-500 bg-blue-500 text-white' : 'border-slate-600'
+                        }`}
+                      >
                         {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
                       </div>
                     </button>
@@ -186,16 +295,6 @@ export default function VotingPage() {
                   Review Selection <ArrowRight className="w-4 h-4" />
                 </Button>
               </div>
-
-              {/* Duplicate Vote Test Switcher */}
-              <div className="pt-2 text-center">
-                <button
-                  onClick={() => setStep('duplicate')}
-                  className="text-[11px] text-red-400 hover:text-red-300 underline font-medium cursor-pointer"
-                >
-                  [Demo Test: Trigger Double Voting Attempt]
-                </button>
-              </div>
             </div>
           )}
 
@@ -210,14 +309,13 @@ export default function VotingPage() {
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md mx-auto text-center space-y-3">
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Selected Candidate</p>
                 <div className="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-xl font-bold mx-auto shadow-lg shadow-blue-600/30">
-                  {candidates.find((c) => c.id === selectedCandidate)?.name.split(' ').map(n => n[0]).join('')}
+                  {selectedCandObj?.name
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')}
                 </div>
-                <h3 className="text-lg font-extrabold text-white">
-                  {candidates.find((c) => c.id === selectedCandidate)?.name}
-                </h3>
-                <p className="text-xs text-slate-400">
-                  {candidates.find((c) => c.id === selectedCandidate)?.position}
-                </p>
+                <h3 className="text-lg font-extrabold text-white">{selectedCandObj?.name}</h3>
+                <p className="text-xs text-slate-400">{selectedCandObj?.position}</p>
                 <div className="pt-3 border-t border-slate-800 text-[11px] text-slate-500">
                   Ballot payload will be encrypted with Zero-Knowledge verification
                 </div>
@@ -227,8 +325,22 @@ export default function VotingPage() {
                 <Button variant="ghost" onClick={() => setStep('select')} icon={<ArrowLeft className="w-4 h-4" />}>
                   Change Selection
                 </Button>
-                <Button onClick={handleConfirm} variant="success" size="lg" className="!px-6">
-                  <CheckCircle2 className="w-4 h-4" /> Confirm & Cast Vote
+                <Button
+                  onClick={handleConfirm}
+                  variant="success"
+                  size="lg"
+                  disabled={loading}
+                  className="!px-6"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Casting to Blockchain...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4" /> Confirm &amp; Cast Vote
+                    </span>
+                  )}
                 </Button>
               </div>
             </div>
@@ -246,7 +358,9 @@ export default function VotingPage() {
               </div>
 
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 max-w-md mx-auto space-y-3">
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Verifiable Ballot Receipt</p>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
+                  Verifiable Ballot Receipt
+                </p>
                 <div className="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-xl p-3">
                   <code className="text-sm font-mono font-bold text-blue-400">{ballotRef}</code>
                   <button
@@ -257,8 +371,14 @@ export default function VotingPage() {
                     {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
+                {txHash && (
+                  <p className="text-[10px] text-slate-500 font-mono truncate">
+                    Tx: {txHash}
+                  </p>
+                )}
                 <p className="text-[11px] text-slate-500 text-left leading-relaxed">
-                  Save this reference code to independently audit your ballot inclusion on the Public Portal without exposing your identity.
+                  Save this reference code to independently audit your ballot inclusion on the Public Portal without
+                  exposing your identity.
                 </p>
               </div>
 
@@ -286,7 +406,15 @@ export default function VotingPage() {
               </div>
 
               <div className="bg-red-950/40 border border-red-800/60 rounded-2xl p-4 max-w-md mx-auto text-xs text-red-300 space-y-2">
-                <p>This voting credential (<code className="font-mono font-bold text-white">{voterId}</code>) has already submitted a ballot for this election.</p>
+                <p>
+                  This voting credential (<code className="font-mono font-bold text-white">{voterId}</code>) has already
+                  submitted a ballot for this election.
+                </p>
+                {ballotRef && (
+                  <p className="font-mono text-slate-300 text-[11px]">
+                    Existing Ballot Reference: <span className="text-white font-bold">{ballotRef}</span>
+                  </p>
+                )}
                 <p className="font-semibold text-red-400">The smart contract rejected your secondary submission.</p>
               </div>
 

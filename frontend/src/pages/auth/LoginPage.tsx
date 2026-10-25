@@ -1,42 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ArrowRight, UserCheck, Scale, Vote, Lock } from 'lucide-react';
-import { demoAccounts } from '@/data/mockData';
+import { Eye, EyeOff, UserCheck, Vote, Building2 } from 'lucide-react';
 import BrandMark from '@/components/common/BrandMark';
+import { authApi, type DemoAccount } from '@/services/api';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [accounts, setAccounts] = useState<DemoAccount[]>([]);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+  // Load available accounts from the backend API
+  useEffect(() => {
+    authApi
+      .getDemoAccounts()
+      .then((data) => {
+        if (data && data.accounts) {
+          setAccounts(data.accounts);
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not fetch demo accounts from API:', err);
+      });
+  }, []);
 
-    if (email === demoAccounts.admin.email && password === demoAccounts.admin.password) {
-      navigate('/admin');
-    } else if (email === demoAccounts.validator.email && password === demoAccounts.validator.password) {
-      navigate('/validator');
-    } else if (email === demoAccounts.voter.email && password === demoAccounts.voter.password) {
-      navigate('/voting');
-    } else {
-      setError('Invalid credentials. Select one of the demo role cards below.');
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setError('Please enter both email and password.');
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+
+    try {
+      const data = await authApi.login(email, password);
+      if (data.role === 'admin') {
+        navigate('/admin');
+      } else if (data.role === 'validator') {
+        navigate('/validator');
+      } else if (data.role === 'voter') {
+        navigate('/voting');
+      } else {
+        navigate('/admin');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const autofillRole = (role: 'admin' | 'validator' | 'voter') => {
-    if (role === 'admin') {
-      setEmail(demoAccounts.admin.email);
-      setPassword(demoAccounts.admin.password);
-    } else if (role === 'validator') {
-      setEmail(demoAccounts.validator.email);
-      setPassword(demoAccounts.validator.password);
-    } else if (role === 'voter') {
-      setEmail(demoAccounts.voter.email);
-      setPassword(demoAccounts.voter.password);
-    }
+  const autofillAccount = (acc: DemoAccount) => {
+    setEmail(acc.email);
+    setPassword(acc.password);
   };
 
   return (
@@ -60,89 +81,80 @@ export default function LoginPage() {
             Governance-as-a-Service (GaaS)
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
-            Verifiable Digital Elections & Governance.
+            Trust Infrastructure for <br />
+            Digital Governance &amp; Elections
           </h2>
-          <p className="mt-4 text-slate-400 text-sm leading-relaxed max-w-md">
-            Enter your credentials or select a pre-configured role profile to explore the administrator console, validator network, or voter booth.
+          <p className="mt-4 text-slate-400 text-sm max-w-md leading-relaxed">
+            Role-based access control backed by cryptographic verification and independent Civil Society validator nodes.
           </p>
         </div>
 
-        <footer className="relative z-10 text-xs text-slate-500">
-          <p>© {new Date().getFullYear()} Zhura · Trust in Every Vote.</p>
-          <p className="mt-2">Prototype experience · Demo data only</p>
-          <nav className="mt-3 flex gap-4" aria-label="Footer">
-            <Link className="hover:text-slate-300" to="/">Home</Link>
-            <Link className="hover:text-slate-300" to="/portal">Public portal</Link>
-          </nav>
-        </footer>
+        <div className="relative z-10 text-xs text-slate-500">
+          Connected to live backend · Token-based authentication
+        </div>
       </div>
 
       {/* Right Login Form */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 bg-slate-950">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-white">Sign in to Zhura</h1>
-            <p className="text-xs text-slate-400 mt-1">Select a demo role or enter your credentials</p>
+      <div className="lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-16">
+        <div className="max-w-md w-full space-y-6">
+          <div>
+            <h3 className="text-2xl font-bold text-white">Sign In to Zhura</h3>
+            <p className="text-xs text-slate-400 mt-1">Authenticate via the live backend API</p>
           </div>
 
-          {/* 1-Click Demo Accounts Quick Cards */}
-          <div className="space-y-2.5">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider text-center mb-1">1-Click Demo Profiles</p>
-            <button
-              onClick={() => { autofillRole('admin'); navigate('/admin'); }}
-              className="w-full flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 hover:border-blue-500 hover:bg-blue-600/10 rounded-2xl transition-all cursor-pointer group text-left"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center">
-                  <UserCheck className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white group-hover:text-blue-300">Election Administrator</p>
-                  <p className="text-[10px] text-slate-400">{demoAccounts.admin.email}</p>
-                </div>
-              </div>
-              <span className="text-xs font-bold text-blue-400 group-hover:translate-x-1 transition-transform">Launch →</span>
-            </button>
+          {/* Quick Autofill Cards populated from backend */}
+          {accounts.length > 0 && (
+            <div className="space-y-2.5">
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                Available Roles (From API)
+              </p>
 
-            <button
-              onClick={() => { autofillRole('validator'); navigate('/validator'); }}
-              className="w-full flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 hover:border-purple-500 hover:bg-purple-600/10 rounded-2xl transition-all cursor-pointer group text-left"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center">
-                  <Scale className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white group-hover:text-purple-300">CSO Validator Node</p>
-                  <p className="text-[10px] text-slate-400">{demoAccounts.validator.email}</p>
-                </div>
-              </div>
-              <span className="text-xs font-bold text-purple-400 group-hover:translate-x-1 transition-transform">Launch →</span>
-            </button>
+              {accounts.map((acc) => {
+                const Icon =
+                  acc.role === 'admin' ? Building2 : acc.role === 'validator' ? UserCheck : Vote;
+                const roleBorder =
+                  acc.role === 'admin'
+                    ? 'hover:border-blue-500 hover:bg-blue-600/10'
+                    : acc.role === 'validator'
+                      ? 'hover:border-purple-500 hover:bg-purple-600/10'
+                      : 'hover:border-emerald-500 hover:bg-emerald-600/10';
+                const textColor =
+                  acc.role === 'admin'
+                    ? 'text-blue-400'
+                    : acc.role === 'validator'
+                      ? 'text-purple-400'
+                      : 'text-emerald-400';
 
-            <button
-              onClick={() => { autofillRole('voter'); navigate('/voting'); }}
-              className="w-full flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 hover:border-emerald-500 hover:bg-emerald-600/10 rounded-2xl transition-all cursor-pointer group text-left"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center">
-                  <Vote className="w-5 h-5" />
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-white group-hover:text-emerald-300">Voter Voting Booth</p>
-                  <p className="text-[10px] text-slate-400">{demoAccounts.voter.email}</p>
-                </div>
-              </div>
-              <span className="text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">Launch →</span>
-            </button>
-          </div>
+                return (
+                  <button
+                    key={acc.email}
+                    onClick={() => autofillAccount(acc)}
+                    className={`w-full flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 ${roleBorder} rounded-2xl transition-all cursor-pointer group text-left`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl bg-slate-800 ${textColor} flex items-center justify-center`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-white group-hover:text-slate-100">{acc.name}</p>
+                        <p className="text-[10px] text-slate-400">{acc.email}</p>
+                      </div>
+                    </div>
+                    <span className={`text-xs font-bold ${textColor} group-hover:translate-x-1 transition-transform`}>
+                      Autofill →
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div className="relative py-2">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-800" />
             </div>
             <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-widest text-slate-500">
-              <span className="bg-slate-950 px-3">Or Standard Sign In</span>
+              <span className="bg-slate-950 px-3">Credentials Form</span>
             </div>
           </div>
 
@@ -159,7 +171,8 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@zhura.et"
+                placeholder="admin@zhura.demo"
+                required
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-900 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -172,6 +185,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
+                  required
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-900 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
                 />
                 <button
@@ -186,12 +200,16 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl text-xs transition-all shadow-lg shadow-blue-600/30 cursor-pointer active:scale-95"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-bold py-3 rounded-xl text-xs transition-all shadow-lg shadow-blue-600/30 cursor-pointer active:scale-95"
             >
-              Sign In
+              {loading ? 'Authenticating...' : 'Sign In'}
             </button>
           </form>
-          <p className="text-center text-[11px] leading-relaxed text-slate-500">Zhura is a prototype. Demo accounts use fictional data and are not for real elections.</p>
+
+          <p className="text-center text-[11px] leading-relaxed text-slate-500">
+            Zhura connects to the live FastAPI backend service on port 8000.
+          </p>
         </div>
       </div>
     </div>

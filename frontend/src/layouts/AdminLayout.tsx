@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import BrandMark from '@/components/common/BrandMark';
 import SiteFooter from '@/components/common/SiteFooter';
-import { Link, useLocation, Outlet, useNavigate } from 'react-router-dom';
+import RoleNavSwitcher from '@/components/common/RoleNavSwitcher';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard, Vote, Users, UserCheck, Scale, DollarSign,
   FileText, Shield, Settings, Menu, X,
-  Bell, Search, ChevronRight, AlertOctagon, ExternalLink,
-  Lock, CheckCircle2, ShieldAlert
+  Search, ChevronRight, ShieldAlert, Lock
 } from 'lucide-react';
 
 const navItems = [
@@ -27,7 +27,6 @@ export function AdminLayout() {
   const [showAttackModal, setShowAttackModal] = useState(false);
   const [attackResult, setAttackResult] = useState<'idle' | 'rejected'>('idle');
   const location = useLocation();
-  const navigate = useNavigate();
 
   const handleSimulateAttack = () => {
     setAttackResult('idle');
@@ -186,33 +185,8 @@ export function AdminLayout() {
               Simulate Attack
             </button>
 
-            {/* Quick Demo Switcher */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs border border-slate-200/60">
-              <button
-                onClick={() => navigate('/admin')}
-                className="px-2.5 py-1 rounded-lg font-semibold bg-white text-blue-600 shadow-xs cursor-pointer"
-              >
-                Admin
-              </button>
-              <button
-                onClick={() => navigate('/validator')}
-                className="px-2.5 py-1 rounded-lg font-medium text-slate-600 hover:text-slate-900 cursor-pointer"
-              >
-                Validator
-              </button>
-              <button
-                onClick={() => navigate('/voting')}
-                className="px-2.5 py-1 rounded-lg font-medium text-slate-600 hover:text-slate-900 cursor-pointer"
-              >
-                Voter
-              </button>
-              <button
-                onClick={() => navigate('/portal')}
-                className="px-2.5 py-1 rounded-lg font-medium text-slate-600 hover:text-slate-900 cursor-pointer"
-              >
-                Public
-              </button>
-            </div>
+            {/* Role Navigation Switcher */}
+            <RoleNavSwitcher variant="light" showHome />
 
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
 
