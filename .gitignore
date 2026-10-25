@@ -1,1 +1,47 @@
-.freebuff/project-id
+# Freebuff & internal IDE metadata
+.freebuff/
+
+# Documentation work files
+doc/AREAS_TO_WORK_ON.md
+doc/CAPABILITIES_AND_LIMITATIONS.md
+doc/description.md
+doc/EASE_OF_USE.md
+doc/FAQ.md
+doc/ROADMAP.md
+
+# Environment variables & secrets
+.env
+*.env
+!.env.example
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+backend/zhura.db
+backend/zihura.db
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Node & Frontend build outputs
+node_modules/
+dist/
+build/
+.next/
+*.tsbuildinfo
+
+# Hardhat / Blockchain build cache
+blockchain/cache/
+blockchain/artifacts/
+blockchain/typechain-types/
+
+# OS temporary files
+.DS_Store
+Thumbs.db
