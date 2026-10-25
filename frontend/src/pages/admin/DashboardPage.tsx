@@ -55,7 +55,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2.5">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
             <span>
-              <strong>Reviewer Sandbox Notice:</strong> The cloud backend on Render's free tier is waking up from idle sleep. Currently displaying synchronized telemetry snapshot.
+              <strong>Service Status Notice:</strong> The cloud backend on Render's free tier is waking up from idle sleep, and some background services may experience limited availability. Currently displaying synchronized telemetry snapshot.
             </span>
           </div>
           <button
