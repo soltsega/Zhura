@@ -16,6 +16,7 @@ export default function VotersPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   // Form state
   const [voterId, setVoterId] = useState('');
@@ -60,7 +61,7 @@ export default function VotersPage() {
         election_id: activeElection ? activeElection.id : 1,
         voter_id: voterId.trim().toUpperCase(),
         name,
-        email: email || `${voterId.toLowerCase()}@zhura.demo`,
+        email: email || `${voterId.toLowerCase()}@zhuranet.org`,
         eligibility,
         status: 'eligible',
         has_voted: false,
@@ -72,7 +73,7 @@ export default function VotersPage() {
       setEmail('');
       loadVoters();
     } catch (err: any) {
-      alert(err.message || 'Error creating voter');
+      setErrorMsg(err.message || 'Error creating voter');
     } finally {
       setAddLoading(false);
     }
@@ -96,6 +97,12 @@ export default function VotersPage() {
           </Button>
         </div>
       </div>
+
+      {errorMsg && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
+          {errorMsg}
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -247,7 +254,7 @@ export default function VotersPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="voter@zhura.demo"
+                placeholder="voter@zhuranet.org"
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

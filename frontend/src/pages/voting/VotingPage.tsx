@@ -128,7 +128,7 @@ export default function VotingPage() {
           <div className="flex items-center gap-3">
             <BrandMark className="h-10 w-10 rounded-full shadow-lg shadow-blue-600/30" />
             <div>
-              <h1 className="text-base font-bold text-white tracking-tight">ዝሁራ — Zhura Voting Booth</h1>
+              <h1 className="text-base font-bold text-white tracking-tight">Zhuranet Voting Booth</h1>
               <p className="text-[10px] text-slate-400 uppercase tracking-widest">End-to-End Verifiable Digital Election</p>
             </div>
           </div>
@@ -206,8 +206,8 @@ export default function VotingPage() {
                     placeholder="e.g., VTR-0001"
                     className="w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-center text-lg font-mono font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all uppercase"
                   />
-                  <p className="text-[11px] text-slate-500 text-center mt-1.5">
-                    Live voter ID from database: <code className="text-blue-400">VTR-0001</code>
+                  <p className="text-[11px] text-slate-400 text-center mt-1.5">
+                    Enter your assigned voter credential code (e.g. <code className="text-blue-400 font-mono">VTR-0001</code>)
                   </p>
                 </div>
 

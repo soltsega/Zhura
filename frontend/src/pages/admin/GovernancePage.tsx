@@ -87,6 +87,7 @@ export default function GovernancePage() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   // Form state
   const [title, setTitle] = useState('');
@@ -96,12 +97,14 @@ export default function GovernancePage() {
   const loadProposals = async () => {
     try {
       setLoading(true);
+      setActionError('');
       const res = await proposalsApi.list({
         status_filter: filterStatus !== 'all' ? filterStatus : undefined,
       });
       setProposals(res.proposals);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to load proposals:', err);
+      setActionError(err.message || 'Failed to load governance proposals');
     } finally {
       setLoading(false);
     }
@@ -115,6 +118,7 @@ export default function GovernancePage() {
     if (!title.trim() || !description.trim()) return;
     try {
       setCreateLoading(true);
+      setActionError('');
       const electionsRes = await electionsApi.list();
       const activeElection = electionsRes.elections[0];
 
@@ -132,7 +136,7 @@ export default function GovernancePage() {
       setDescription('');
       loadProposals();
     } catch (err: any) {
-      alert(err.message || 'Error submitting proposal');
+      setActionError(err.message || 'Error submitting proposal');
     } finally {
       setCreateLoading(false);
     }
@@ -154,6 +158,12 @@ export default function GovernancePage() {
           New Proposal
         </Button>
       </div>
+
+      {actionError && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
+          {actionError}
+        </div>
+      )}
 
       {/* Validator Network Status */}
       <Card title="Independent Validator Quorum" icon={<Scale className="w-5 h-5" />}>

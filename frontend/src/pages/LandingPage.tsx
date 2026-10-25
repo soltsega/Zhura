@@ -68,8 +68,8 @@ export default function LandingPage() {
               <BrandMark className="h-10 w-10 rounded-full shadow-lg shadow-blue-500/20" />
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-xl font-bold text-white tracking-tight">Zhura</span>
-                  <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">ዝሁራ</span>
+                  <span className="text-xl font-bold text-white tracking-tight">Zhuranet</span>
+                  <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">Enterprise</span>
                 </div>
                 <p className="text-[10px] text-slate-400 tracking-widest uppercase">Digital Governance Infrastructure</p>
               </div>
@@ -164,7 +164,7 @@ export default function LandingPage() {
             </div>
 
             <div className="pt-3 border-t border-slate-800">
-              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Demo Consoles</p>
+              <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Platform Workspaces</p>
               <RoleNavSwitcher variant="dark" className="w-full justify-between" />
             </div>
 
@@ -197,7 +197,7 @@ export default function LandingPage() {
             </h1>
 
             <p className="mt-6 text-base sm:text-xl text-slate-300 leading-relaxed max-w-2xl mx-auto font-normal">
-              Zhura transforms elections from processes participants are expected to trust into processes whose critical records and decisions can be <em>independently verified</em>.
+              Zhuranet transforms elections from processes participants are expected to trust into processes whose critical records and decisions can be <em>independently verified</em>.
             </p>
 
             {/* CTAs */}
@@ -408,7 +408,7 @@ export default function LandingPage() {
               Shared, Tamper-Evident Trust Infrastructure
             </h2>
             <p className="mt-4 text-base text-slate-400 leading-relaxed">
-              Traditional voting software relies on trusted database administrators. Zhura enforces critical governance invariants with smart contracts and independent Civil Society nodes.
+              Traditional voting software relies on trusted database administrators. Zhuranet enforces critical governance invariants with smart contracts and independent Civil Society nodes.
             </p>
           </div>
 
@@ -478,16 +478,16 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-7 hover:border-rose-500/50 transition-all duration-300 group">
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center font-bold mb-6 group-hover:scale-110 transition-transform">
-                <ShieldAlert className="w-6 h-6" />
+            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-7 hover:border-blue-500/50 transition-all duration-300 group">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold mb-6 group-hover:scale-110 transition-transform">
+                <ShieldCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Simulated Attack Protection</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Tamper-Resistant State Security</h3>
               <p className="text-sm text-slate-400 leading-relaxed">
-                Interactive security sandbox built into the Admin console demonstrates how unauthorized state modifications are immediately detected and rejected on-chain.
+                Cryptographic validator consensus guarantees that any unauthorized database modifications, tally alterations, or election rule tampering are immediately rejected on-chain.
               </p>
-              <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs text-rose-400 font-semibold">
-                <span>Built-in adversary testing</span>
+              <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs text-blue-400 font-semibold">
+                <span>Multi-signature quorum protection</span>
               </div>
             </div>
           </div>
@@ -506,7 +506,7 @@ export default function LandingPage() {
               From Administrative Action to Independent Verification
             </h2>
             <p className="mt-4 text-base text-slate-400 leading-relaxed">
-              Zhura separates administrative responsibility from approval authority. Here is how a verified election cycle executes.
+              Zhuranet separates administrative responsibility from approval authority. Here is how a verified election cycle executes.
             </p>
           </div>
 
@@ -584,7 +584,7 @@ export default function LandingPage() {
               Built for High-Stakes Institutional Governance
             </h2>
             <p className="mt-4 text-base text-slate-400 leading-relaxed">
-              Zhura adapts to complex voting rules, multi-seat boards, weighted voting, and strict regulatory audit requirements across sectors.
+              Zhuranet adapts to complex voting rules, multi-seat boards, weighted voting, and strict regulatory audit requirements across sectors.
             </p>
           </div>
 

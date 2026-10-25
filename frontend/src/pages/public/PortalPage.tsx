@@ -129,7 +129,7 @@ export default function PortalPage() {
                   Open Audit Access
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Zhura — Public Governance Telemetry</p>
+              <p className="text-xs text-slate-400">Zhuranet — Public Governance Telemetry</p>
             </div>
           </div>
 

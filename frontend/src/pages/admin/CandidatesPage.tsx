@@ -10,6 +10,7 @@ export default function CandidatesPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   // New candidate form state
   const [name, setName] = useState('');
@@ -21,12 +22,14 @@ export default function CandidatesPage() {
   const loadCandidates = async () => {
     try {
       setLoading(true);
+      setActionError('');
       const electionsRes = await electionsApi.list();
       const activeElection = electionsRes.elections[0];
       const res = await candidatesApi.list(activeElection?.id);
       setCandidates(res.candidates);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to load candidates:', err);
+      setActionError(err.message || 'Failed to load candidates');
     } finally {
       setLoading(false);
     }
@@ -40,6 +43,7 @@ export default function CandidatesPage() {
     if (!name.trim()) return;
     try {
       setAddLoading(true);
+      setActionError('');
       const electionsRes = await electionsApi.list();
       const activeElection = electionsRes.elections[0];
 
@@ -59,9 +63,20 @@ export default function CandidatesPage() {
       setQualifications('');
       loadCandidates();
     } catch (err: any) {
-      alert(err.message || 'Error adding candidate');
+      setActionError(err.message || 'Error adding candidate');
     } finally {
       setAddLoading(false);
+    }
+  };
+
+  const handleDeleteCandidate = async (id: number) => {
+    if (!window.confirm('Are you sure you want to remove this candidate?')) return;
+    try {
+      setActionError('');
+      await candidatesApi.delete(id);
+      loadCandidates();
+    } catch (err: any) {
+      setActionError(err.message || 'Error removing candidate');
     }
   };
 
@@ -81,6 +96,12 @@ export default function CandidatesPage() {
           Add Candidate
         </Button>
       </div>
+
+      {actionError && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
+          {actionError}
+        </div>
+      )}
 
       <div className="flex items-center bg-white border border-slate-200 rounded-lg px-3 py-2 max-w-md">
         <Search className="w-4 h-4 text-slate-400" />
@@ -103,7 +124,7 @@ export default function CandidatesPage() {
           {filtered.map((candidate) => (
             <div
               key={candidate.id}
-              className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+              className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col justify-between"
             >
               <div className="p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -135,6 +156,15 @@ export default function CandidatesPage() {
                     </span>
                   </div>
                 </div>
+              </div>
+              <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
+                <button
+                  onClick={() => handleDeleteCandidate(candidate.id)}
+                  className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+                  title="Remove candidate"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Remove
+                </button>
               </div>
             </div>
           ))}

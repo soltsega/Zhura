@@ -35,6 +35,7 @@ export default function ExpensesPage() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   // Form state
   const [category, setCategory] = useState('logistics');
@@ -88,7 +89,7 @@ export default function ExpensesPage() {
       setVendor('');
       loadData();
     } catch (err: any) {
-      alert(err.message || 'Error recording expense');
+      setActionError(err.message || 'Error recording expense');
     } finally {
       setAddLoading(false);
     }
@@ -116,6 +117,12 @@ export default function ExpensesPage() {
           Record Expense
         </Button>
       </div>
+
+      {actionError && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl">
+          {actionError}
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
