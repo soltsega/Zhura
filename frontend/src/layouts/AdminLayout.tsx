@@ -143,6 +143,23 @@ export function AdminLayout() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Reviewer Sandbox Banner */}
+        <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-1.5 text-xs text-amber-800 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse flex-shrink-0" />
+            <span className="font-semibold text-amber-900">Reviewer Preview:</span>
+            <span className="text-amber-800/90 hidden sm:inline">
+              Render Free Tier Sandbox · Free containers enter idle sleep; initial requests take ~30–45s to wake up, and certain blockchain telemetry services may have limited availability.
+            </span>
+            <span className="text-amber-800/90 sm:hidden">
+              Render Sandbox: background services may experience cold-start latency.
+            </span>
+          </div>
+          <span className="text-[11px] font-medium text-amber-700 bg-amber-100/70 border border-amber-300/60 px-2 py-0.5 rounded-md flex-shrink-0">
+            Demo Environment
+          </span>
+        </div>
+
         {/* Top Bar */}
         <header className="h-16 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 lg:px-6 flex-shrink-0 shadow-xs z-10">
           <div className="flex items-center gap-4">

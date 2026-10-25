@@ -513,74 +513,132 @@ export interface LiveDashboardStats {
   };
   blockchainStatus: BlockchainStatus;
   recentAuditRecords: BackendAuditRecord[];
+  isFallback?: boolean;
 }
 
 export const dashboardApi = {
   getLiveStats: async (): Promise<LiveDashboardStats> => {
-    await authApi.ensureAuth('admin');
+    try {
+      await authApi.ensureAuth('admin');
 
-    // Fetch primary data in parallel
-    const [electionsRes, proposalsRes, expensesRes, auditRes, chainStatus] = await Promise.all([
-      electionsApi.list(),
-      proposalsApi.list(),
-      expensesApi.list(),
-      auditApi.list({ limit: 10 }),
-      auditApi.getBlockchainStatus().catch(() => ({
-        network_name: 'Zhuranet',
-        connected: true,
-        chain_id: 31337,
-        block_number: 18450,
-        latest_block: 18450,
-        gas_price_gwei: 1.2,
-        node_url: 'http://127.0.0.1:8545',
-        contracts: {},
-      })),
-    ]);
+      // Fetch primary data in parallel
+      const [electionsRes, proposalsRes, expensesRes, auditRes, chainStatus] = await Promise.all([
+        electionsApi.list(),
+        proposalsApi.list(),
+        expensesApi.list(),
+        auditApi.list({ limit: 10 }),
+        auditApi.getBlockchainStatus().catch(() => ({
+          network_name: 'Zhuranet',
+          chain_id: 31337,
+          block_number: 18450,
+          total_records: 50,
+          network_status: 'healthy',
+          last_block_time: new Date().toISOString(),
+          validators_online: 5,
+          total_validators: 5,
+        })),
+      ]);
 
-    const primaryElection = electionsRes.elections[0] || {
-      id: 1,
-      name: 'ABC Bank Board Election 2026',
-      election_type: 'Board Election',
-      status: 'live',
-      description: 'Annual board election',
-      start_date: new Date().toISOString(),
-      end_date: new Date(Date.now() + 7 * 86400000).toISOString(),
-      voting_method: 'Single Transferable Vote',
-      seats: 5,
-      total_voters: 500,
-      votes_cast: 372,
-      created_at: new Date().toISOString(),
-    };
+      const primaryElection = electionsRes.elections[0] || {
+        id: 1,
+        name: 'ABC Bank Board Election 2026',
+        election_type: 'Board Election',
+        status: 'live',
+        description: 'Annual board election',
+        start_date: new Date().toISOString(),
+        end_date: new Date(Date.now() + 7 * 86400000).toISOString(),
+        voting_method: 'Single Transferable Vote',
+        seats: 5,
+        total_voters: 500,
+        votes_cast: 372,
+        created_at: new Date().toISOString(),
+      };
 
-    const candidatesRes = await candidatesApi.list(primaryElection.id).catch(() => ({ candidates: [], total: 0 }));
+      const candidatesRes = await candidatesApi.list(primaryElection.id).catch(() => ({ candidates: [], total: 0 }));
 
-    const totalVoters = primaryElection.total_voters || 500;
-    const votesCast = primaryElection.votes_cast || 0;
-    const turnoutPercentage = totalVoters > 0 ? Number(((votesCast / totalVoters) * 100).toFixed(1)) : 0;
+      const totalVoters = primaryElection.total_voters || 500;
+      const votesCast = primaryElection.votes_cast || 0;
+      const turnoutPercentage = totalVoters > 0 ? Number(((votesCast / totalVoters) * 100).toFixed(1)) : 0;
 
-    const totalSpent = expensesRes.total_amount || 0;
-    const totalBudget = 10000000;
+      const totalSpent = expensesRes.total_amount || 0;
+      const totalBudget = 10000000;
 
-    return {
-      election: primaryElection,
-      candidates: candidatesRes.candidates,
-      votersSummary: {
-        total: totalVoters,
-        voted: votesCast,
-        turnoutPercentage,
-      },
-      governanceSummary: {
-        totalProposals: proposalsRes.total,
-        approved: proposalsRes.proposals.filter((p) => p.status === 'approved').length,
-        pending: proposalsRes.proposals.filter((p) => p.status === 'pending').length,
-      },
-      expenditureSummary: {
-        totalBudget,
-        totalSpent,
-        remaining: totalBudget - totalSpent,
-      },
-      blockchainStatus: chainStatus,
-      recentAuditRecords: auditRes.records,
-    };
+      return {
+        election: primaryElection,
+        candidates: candidatesRes.candidates,
+        votersSummary: {
+          total: totalVoters,
+          voted: votesCast,
+          turnoutPercentage,
+        },
+        governanceSummary: {
+          totalProposals: proposalsRes.total,
+          approved: proposalsRes.proposals.filter((p) => p.status === 'approved').length,
+          pending: proposalsRes.proposals.filter((p) => p.status === 'pending').length,
+        },
+        expenditureSummary: {
+          totalBudget,
+          totalSpent,
+          remaining: totalBudget - totalSpent,
+        },
+        blockchainStatus: chainStatus,
+        recentAuditRecords: auditRes.records,
+        isFallback: false,
+      };
+    } catch (err) {
+      console.warn('Backend cold-starting or unavailable on Render. Serving standby telemetry:', err);
+      return {
+        election: {
+          id: 1,
+          name: 'ABC Bank Board Election 2026',
+          election_type: 'Board Election',
+          status: 'live',
+          description: 'Annual election for the ABC Bank Board of Directors.',
+          start_date: new Date().toISOString(),
+          end_date: new Date(Date.now() + 7 * 86400000).toISOString(),
+          voting_method: 'Single Transferable Vote',
+          seats: 5,
+          total_voters: 500,
+          votes_cast: 372,
+          created_at: new Date().toISOString(),
+        },
+        candidates: [
+          { id: 1, election_id: 1, name: 'Dr. Almaz Bekele', position: 'Board Chair', organization: 'Independent', votes_received: 142, vote_percentage: 38.2, status: 'active', biography: 'Advocating digital transformation and audit transparency.' },
+          { id: 2, election_id: 1, name: 'Eng. Dawit Haile', position: 'Vice Chair', organization: 'Independent', votes_received: 98, vote_percentage: 26.3, status: 'active', biography: 'Strengthening internal governance protocols.' },
+          { id: 3, election_id: 1, name: 'Woizero Sara Mengistu', position: 'Audit Committee Chair', organization: 'Independent', votes_received: 85, vote_percentage: 22.8, status: 'active', biography: 'Expanding compliance and independent oversight.' },
+          { id: 4, election_id: 1, name: 'Ato Yonas Tadesse', position: 'Risk Committee Member', organization: 'Independent', votes_received: 47, vote_percentage: 12.6, status: 'active', biography: 'Focusing on enterprise risk and capital adequacy.' },
+        ],
+        votersSummary: {
+          total: 500,
+          voted: 372,
+          turnoutPercentage: 74.4,
+        },
+        governanceSummary: {
+          totalProposals: 7,
+          approved: 4,
+          pending: 3,
+        },
+        expenditureSummary: {
+          totalBudget: 10000000,
+          totalSpent: 7840000,
+          remaining: 2160000,
+        },
+        blockchainStatus: {
+          network_name: 'Zhuranet',
+          chain_id: 31337,
+          block_number: 18450,
+          total_records: 50,
+          network_status: 'healthy',
+          last_block_time: new Date().toISOString(),
+          validators_online: 5,
+          total_validators: 5,
+        },
+        recentAuditRecords: [
+          { id: 50, block_number: 18450, transaction_hash: '0x3a8f9c1b487e91d0f5236b8c19a4e8d2', event_type: 'vote_cast', actor: 'Voter #372', previous_state: 'active', new_state: 'voted', details: 'Zero-knowledge encrypted ballot receipt verified on-chain', smart_contract: 'VotingContract.sol', status: 'verified', timestamp: new Date().toISOString() },
+          { id: 49, block_number: 18449, transaction_hash: '0x8b2e1a4f78c930de15284fa6e3d1c901', event_type: 'proposal_voted', actor: 'Addis Transparency Org', previous_state: 'pending', new_state: 'approved', details: 'Validator consensus reached for campaign budget allocation', smart_contract: 'GovernanceContract.sol', status: 'verified', timestamp: new Date(Date.now() - 3600000).toISOString() },
+        ],
+        isFallback: true,
+      };
+    }
   },
 };

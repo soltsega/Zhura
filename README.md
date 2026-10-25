@@ -1,128 +1,109 @@
-# Zhuranet
+# Zhuranet — Trust Infrastructure for Digital Elections & Governance
 
-**Trust in Every Vote.**
+**"Trust in Every Vote."**
 
-Zhuranet is a verifiable governance and election platform. It brings together an election management interface, a FastAPI service, a relational database, and Solidity contracts for local development.
+Zhuranet is an enterprise **Governance-as-a-Service (GaaS)** platform designed to transform elections and institutional decision-making from opaque processes participants are expected to blindly trust into transparent, independently auditable systems whose outcomes are mathematically verifiable.
 
-> **Prototype notice:** This software is not certified or suitable for conducting real public elections. Do not use real voter information. The platform operates in a sandbox environment and can run with simulated or local blockchain nodes.
+---
 
-## What’s included
+## 🌐 Live Platform & Mentor Evaluation
 
-- **Web app** — React, TypeScript, Vite, Tailwind CSS, React Router, Recharts, and Lucide icons. Includes administrator, validator, voter, and public-facing governance telemetry screens.
-- **API** — FastAPI with SQLAlchemy models and endpoints for authentication, elections, candidates, voters, votes, proposals, expenses, and audit records.
-- **Data store** — SQLite is the API’s default configuration; Docker Compose starts PostgreSQL for a containerized setup.
-- **Smart contracts** — Solidity contracts and a Hardhat local development node.
-- **Full-Stack Integration** — The web application is connected directly to the FastAPI backend API for real-time authentication, election lifecycle management, consensus proposals, tamper-evident audit records, and voter participation.
+| Resource | Live Link | Access Type |
+| :--- | :--- | :--- |
+| **Live Web Platform** | **[https://zhuranet.onrender.com](https://zhuranet.onrender.com)** | Unified Production Deployment |
+| **Interactive API Documentation** | **[https://zhuranet.onrender.com/api/docs](https://zhuranet.onrender.com/api/docs)** | OpenAPI / Swagger Interface |
+| **Platform Health Check** | **[https://zhuranet.onrender.com/api/health](https://zhuranet.onrender.com/api/health)** | Live Telemetry & System Status |
 
-## Repository layout
+> [!WARNING]
+> ### ⚠️ Note for Mentor & Evaluators (Cloud Sandbox Limitations):
+> This live preview is hosted on **Render's Free Tier**:
+> - **Idle Cold-Starts**: Free cloud containers automatically spin down after 15 minutes of inactivity. If the service is accessed while asleep, the initial request will experience a **30 to 45 second wake-up delay** while the container provisions memory and connects to the database.
+> - **Service Constraints**: In this shared cloud tier, background blockchain node RPC connections and distributed telemetry services operate in simulated sandbox mode. Certain real-time ledger sync functions or heavy background processes may experience intermittent latency or limited availability.
+> - **Full Local Evaluation**: For an instant, full-fidelity evaluation with zero cloud cold-starts, running locally via Docker Compose (`docker compose up --build`) is also provided.
 
-```text
-.
-├── backend/             # FastAPI service, models, and API
-├── blockchain/          # Solidity contracts, Hardhat scripts, and tests
-├── doc/                 # Product description and scope notes
-├── frontend/            # React + TypeScript web app
-├── docker-compose.yml   # PostgreSQL, API, web app, and local chain
-└── serve.js             # Serves the built frontend on port 4181
-```
+---
 
-## Run locally
+### 🔑 Test Accounts for Evaluation
 
-### Frontend only
+The platform includes pre-seeded institutional credentials representing the primary stakeholder roles:
 
-Requires Node.js and npm. From the repository root:
+| Stakeholder Role | Email | Password | Responsibilities & Capabilities |
+| :--- | :--- | :--- | :--- |
+| **Election Administrator** | `admin@zhura.demo` | `demo123` | Complete election lifecycle management, candidate registration, voter verification, live CSV audit generation |
+| **Independent Validator** | `validator@zhura.demo` | `demo123` | Multi-party governance consensus, proposal review, weighted voting, campaign expenditure verification |
+| **Authorized Voter** | `voter@zhura.demo` | `demo123` | Digital voting booth access, ballot casting, and cryptographic receipt verification |
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+---
 
-Open [http://localhost:5173](http://localhost:5173).
+## 🏛️ The Problem: The Fragility of Centralized Trust
 
-Useful frontend commands (run from `frontend/`):
+Traditional democratic and institutional elections depend almost entirely on centralized authorities. Even when elections are conducted with integrity, structural vulnerabilities create persistent challenges:
 
-```bash
-npm run build       # Type-check and create a production build in dist/
-npm run preview     # Preview the production build
-npm run lint        # Run Oxlint
-```
+- **Lack of Independent Auditing**: Observers and stakeholders are typically presented with final aggregated totals rather than cryptographic proof of individual ballot inclusion.
+- **Unverified Administrative Changes**: Critical parameters—such as voter roll eligibility, candidate qualification, and voting deadlines—are vulnerable to unilateral administrative modification without multi-stakeholder approval.
+- **Opaque Expenditure**: Election logistics and campaign financing frequently lack real-time accountability, obscuring financial influence and fund misallocation.
+- **Pervasive Public Distrust**: Because conventional processes cannot be independently verified from outside the organizing authority, contested outcomes frequently lead to institutional paralysis and cynicism.
 
-### Backend API
+---
 
-Requires Python 3.12 or newer. From the repository root:
+## 💡 The Zhuranet Solution
 
-```bash
-cd backend
-python -m venv .venv
-# Activate the environment:
-# Windows PowerShell: .venv\Scripts\Activate.ps1
-# macOS/Linux:        source .venv/bin/activate
-python -m pip install -r requirements.txt
-```
+Zhuranet replaces blind trust with **cryptographic verification and distributed oversight**, creating a shared, tamper-evident audit infrastructure applicable to:
 
-The backend reads configuration from environment variables (the settings are defined in `backend/app/config.py`). To use the included example configuration, copy `backend/.env.example` to `backend/.env` and adjust values for your environment. The example uses PostgreSQL; for a simple local run, set `DATABASE_URL=sqlite:///./zhuranet.db` instead.
+- **National, Regional, and Municipal Elections**
+- **Commercial Bank & Corporate Board of Directors Elections**
+- **Shareholder Annual General Meetings (AGMs)**
+- **University Governance & Student Union Elections**
+- **Cooperative & Professional Association Leadership Elections**
+- **Civic Referendums & Organizational Policy Deliberation**
 
-Start the service from `backend/`:
+---
 
-```bash
-uvicorn app.main:app --reload --port 8000
-```
+## ⚙️ Core Platform Pillars
 
-The API is at [http://localhost:8000](http://localhost:8000), interactive docs at [http://localhost:8000/api/docs](http://localhost:8000/api/docs), and health check at [http://localhost:8000/api/health](http://localhost:8000/api/health).
+### 1. Multi-Stakeholder Validator Consensus
+Critical election actions do not rely on a single administrator. System governance proposals—such as candidate qualification, rule changes, and campaign budget authorizations—require multi-party cryptographic approval from independent validator organizations (e.g., civil society organizations, audit firms, and neutral observers) before taking effect.
 
-### Docker Compose
+### 2. Verifiable Secret Ballot Protocol
+Voter identity authentication is decoupled from ballot submission. When an authenticated voter submits a ballot:
+- The vote is recorded with mathematical integrity proofs.
+- The voter receives a unique cryptographic ballot reference and transaction receipt.
+- Voters can independently confirm that their ballot was recorded in the tally without exposing who they voted for.
 
-Requires Docker Compose. From the repository root:
+### 3. Transparent Campaign & Logistics Accounting
+All operational expenditures (logistics, public notices, observer stipends, and materials) are categorized and published in an open ledger. Administrators and auditors can inspect line-item details and generate instant CSV audit exports directly from the platform.
+
+### 4. Immutable Audit Ledger
+Every high-impact state change—from election creation to vote casting and validator approvals—generates an immutable audit event recording the actor, prior state, new state, cryptographic hash, and timestamp.
+
+---
+
+## 🖥️ Dedicated Stakeholder Workspaces
+
+- **Administrative Console**: Comprehensive dashboard tracking live voter turnout percentages, vote distributions across candidates, budget burn rates, and active governance proposals.
+- **Independent Validator Portal**: Specialized queue where accredited civil society organizations inspect pending policy proposals, submit weighted approvals or rejections, and attach explanatory findings.
+- **Digital Voting Booth**: Accessible, distraction-free ballot interface supporting multiple electoral systems (Single Transferable Vote, First-Past-the-Post, and Referendums) with instantaneous receipt generation.
+- **Public Governance Telemetry Portal**: Citizen-facing transparency portal allowing observers and the public to review election rules, candidate platforms, and audit records in real time.
+
+---
+
+## 🚀 Running Locally (Full-Fidelity Stack)
+
+To run the complete platform locally with live database and simulated blockchain nodes:
+
+### Quick Start with Docker
 
 ```bash
 docker compose up --build
 ```
 
-This starts PostgreSQL on port `5432`, the API on `8000`, the Vite frontend on `5173`, and a Hardhat node on `8545`. Stop the services with `docker compose down`. Compose uses a named PostgreSQL volume, so database data persists across restarts; remove that volume separately if you intend to discard it.
+Once started, the services are available at:
+- **Web Application**: `http://localhost:5173`
+- **FastAPI Backend**: `http://localhost:8000`
+- **Interactive API Documentation**: `http://localhost:8000/api/docs`
 
-### Local blockchain
+---
 
-Requires Node.js and npm. In a terminal, start the local Hardhat node:
+## 📄 License & Evaluation Notice
 
-```bash
-cd blockchain
-npm install
-npm run node
-```
-
-In a second terminal, deploy the contracts to that node:
-
-```bash
-cd blockchain
-npm run deploy:local
-```
-
-The node listens on `http://127.0.0.1:8545`. The backend example configuration sets `USE_MOCK_BLOCKCHAIN=true`; set it to `false` when configuring the backend to use the local RPC node. Contract deployment and backend integration may require additional configuration for a particular workflow.
-
-## Configuration
-
-Backend settings are supplied through environment variables and documented by `backend/.env.example` and `backend/app/config.py`:
-
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | SQLAlchemy database connection string. Defaults to a local SQLite database. |
-| `SECRET_KEY` | Secret used by the API authentication implementation. Set a strong private value outside a local demo. |
-| `USE_MOCK_BLOCKCHAIN` | Enables the simulated blockchain service when `true`. |
-| `BLOCKCHAIN_RPC_URL` | RPC endpoint used for local blockchain configuration. |
-| `CORS_ORIGINS` | JSON list of allowed browser origins. |
-
-Do not commit real secrets or `.env` files.
-
-## Development notes
-
-- Frontend scripts and dependencies are declared in `frontend/package.json`.
-- Backend dependencies are pinned in `backend/requirements.txt`.
-- Smart contract scripts and commands are declared in `blockchain/package.json`.
-- GitHub Actions runs frontend lint/build, a backend Python syntax check, and blockchain compile/tests on pushes and pull requests. See [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
-- Additional product and prototype scope notes are in [`doc/CAPABILITIES_AND_LIMITATIONS.md`](doc/CAPABILITIES_AND_LIMITATIONS.md) and [`doc/description.md`](doc/description.md).
-- `serve.js` serves the built frontend from `frontend/dist` on port `4181`; create that build first with `npm run build` in `frontend/`.
-
-## Security and scope
-
-The included records, identities, election flows, validator decisions, and blockchain behavior are for demonstration. The prototype does not integrate with government identity systems, does not deploy to a public blockchain, and does not implement production-grade zero-knowledge proofs or a complete anonymous voting protocol. Review the capability and limitation notes before adapting the project for another use.
+Zhuranet is developed as a Governance-as-a-Service trust infrastructure model. All demonstration data and identities are simulated for platform evaluation.

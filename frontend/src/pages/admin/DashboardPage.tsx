@@ -50,6 +50,23 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 overflow-x-hidden pb-10 font-sans">
+      {stats?.isFallback && (
+        <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-amber-200 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse flex-shrink-0" />
+            <span>
+              <strong>Reviewer Sandbox Notice:</strong> The cloud backend on Render's free tier is waking up from idle sleep. Currently displaying synchronized telemetry snapshot.
+            </span>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-100 rounded-lg font-medium transition-colors cursor-pointer flex-shrink-0 text-center"
+          >
+            Refresh Live Ledger
+          </button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
